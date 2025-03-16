@@ -10,6 +10,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy import update, delete
 
+from app.common.exceptions import NotFoundError
 from app.db.models.item import Item
 from app.db.schemas.item import ItemCreate, ItemUpdate
 
@@ -49,8 +50,11 @@ class ItemService:
         update_data = item.dict(exclude_unset=True)
         
         query = update(Item).where(Item.id == item_id).values(**update_data)
-        await db.execute(query)
+        result = await db.execute(query)
         await db.commit()
+        
+        if result.rowcount == 0:
+            raise NotFoundError(f"Item with ID {item_id} not found")
         
         return await ItemService.get_item(db, item_id)
 
@@ -60,4 +64,8 @@ class ItemService:
         query = delete(Item).where(Item.id == item_id)
         result = await db.execute(query)
         await db.commit()
-        return result.rowcount > 0 
+        
+        if result.rowcount == 0:
+            raise NotFoundError(f"Item with ID {item_id} not found")
+        
+        return True 

@@ -6,8 +6,11 @@
 """
 
 from fastapi import APIRouter
-from app.api.routes import users, items, auth
 
+# 모든 라우터 가져오기
+from app.api.routes import auth, users, items
+
+# API 라우터 생성
 api_router = APIRouter()
 
 # 각 라우터 등록

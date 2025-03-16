@@ -1,7 +1,10 @@
 """
 # File: fastapi_template/app/core/security.py
-# Description: 인증 및 보안 관련 기능 구현
+# Description: 호환성을 위한 보안 함수 리다이렉트
 """
+
+# common 모듈로 리다이렉트
+from app.common.auth import verify_password, get_password_hash, create_access_token, verify_token
 
 from datetime import datetime, timedelta
 from typing import Any, Union

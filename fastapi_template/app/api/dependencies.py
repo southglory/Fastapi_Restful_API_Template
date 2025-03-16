@@ -9,34 +9,28 @@
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.config import settings
-from app.core.security import verify_token
-from app.db.session import get_db
+from app.common.auth import verify_token
+from app.common.database import get_db
+from app.common.exceptions import AuthenticationError
 from app.services.user_service import UserService
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
 
-async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
+async def get_current_user(token: str = Depends(oauth2_scheme), db: AsyncSession = Depends(get_db)):
     """현재 인증된 사용자 정보를 가져오는 의존성 함수"""
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
-    
     try:
         payload = verify_token(token)
         user_id: int = payload.get("sub")
         if not user_id:
-            raise credentials_exception
+            raise AuthenticationError("Invalid token")
     except JWTError:
-        raise credentials_exception
+        raise AuthenticationError("Invalid token")
         
     user = await UserService.get_user(db, user_id=user_id)
     if not user:
-        raise credentials_exception
+        raise AuthenticationError("User not found")
         
     return user
 
