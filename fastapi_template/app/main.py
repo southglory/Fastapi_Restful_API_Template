@@ -3,21 +3,61 @@
 # Description: FastAPI 애플리케이션의 진입점
 """
 
+import logging
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api import api_router
+from app.common.database import Base, engine
+from app.common.exceptions import add_exception_handlers
+from app.common.utils.cache import get_redis_connection
 from app.core.config import settings
-from app.db.base import Base
-from app.db.session import engine
+
+# 로거 설정
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+)
+logger = logging.getLogger(__name__)
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """
+    애플리케이션 시작/종료 시 실행되는 이벤트 처리
+    """
+    # 애플리케이션 시작 시 수행할 작업
+    logger.info("애플리케이션 시작 중...")
+    
+    # Redis 연결 초기화
+    try:
+        redis = await get_redis_connection()
+        await redis.ping()
+        logger.info("Redis 연결 성공")
+    except Exception as e:
+        logger.error(f"Redis 연결 실패: {e}")
+    
+    yield
+    
+    # 애플리케이션 종료 시 수행할 작업
+    logger.info("애플리케이션 종료 중...")
+
 
 # 애플리케이션 생성
 app = FastAPI(
     title=settings.PROJECT_NAME,
-    openapi_url=f"{settings.API_V1_STR}/openapi.json",
     description="FastAPI RESTful API 템플릿",
-    version="0.1.0"
+    version="0.1.0",
+    openapi_url=f"{settings.API_V1_STR}/openapi.json",
+    docs_url="/docs",
+    redoc_url="/redoc",
+    lifespan=lifespan,
 )
+
+# 전역 예외 핸들러 추가
+add_exception_handlers(app)
 
 # CORS 미들웨어 설정
 app.add_middleware(
@@ -28,22 +68,29 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# 라우터 등록
-app.include_router(api_router, prefix=settings.API_V1_STR)
+# API 라우터 등록
+app.include_router(
+    api_router, 
+    prefix=settings.API_V1_STR
+)
 
-@app.on_event("startup")
-async def startup_db_client():
-    """애플리케이션 시작 시 실행되는 이벤트 핸들러"""
-    # 데이터베이스 연결 테스트 등의 작업 수행
-    pass
-
-@app.on_event("shutdown")
-async def shutdown_db_client():
-    """애플리케이션 종료 시 실행되는 이벤트 핸들러"""
-    # 리소스 정리 작업 수행
-    pass
 
 @app.get("/")
-def root():
-    """루트 엔드포인트"""
-    return {"message": "Welcome to FastAPI RESTful API Template"}
+async def root():
+    """
+    루트 엔드포인트 - 애플리케이션 상태 확인
+    """
+    return {
+        "app_name": settings.PROJECT_NAME,
+        "version": "0.1.0",
+        "status": "healthy",
+        "docs_url": "/docs"
+    }
+
+
+@app.get("/health")
+async def health_check():
+    """
+    상태 확인 엔드포인트 - 컨테이너 헬스체크용
+    """
+    return {"status": "ok"}

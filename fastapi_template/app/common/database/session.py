@@ -1,10 +1,7 @@
 """
-# File: fastapi_template/app/db/session.py
-# Description: 호환성을 위한 세션 관리 함수 리다이렉트
+# File: fastapi_template/app/common/database/session.py
+# Description: 데이터베이스 세션 관리
 """
-
-# common 모듈로 리다이렉트
-from app.common.database import get_db, engine, async_engine, SessionLocal, AsyncSessionLocal
 
 from sqlalchemy import create_engine
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
@@ -33,10 +30,10 @@ AsyncSessionLocal = sessionmaker(
 engine = create_engine(settings.DATABASE_URL, pool_pre_ping=True)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-async def get_db():
+async def get_db() -> AsyncSession:
     """비동기 데이터베이스 세션 제공"""
     async with AsyncSessionLocal() as session:
         try:
             yield session
         finally:
-            await session.close()
+            await session.close() 
