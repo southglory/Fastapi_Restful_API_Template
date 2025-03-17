@@ -6,21 +6,17 @@
 # - 모델 메서드
 """
 
-from sqlalchemy import Column, Integer, String, ForeignKey
-from sqlalchemy.orm import relationship
+from sqlalchemy import ForeignKey
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from app.common.database import BaseModel
+from app.common.database.base import BaseModel
 
 class Item(BaseModel):
-    """
-    아이템 모델
-    """
-    __tablename__ = "items"
-
-    id = Column(Integer, primary_key=True, index=True)
-    title = Column(String, index=True, nullable=False)
-    description = Column(String)
-    owner_id = Column(Integer, ForeignKey("user.id"), nullable=False)
+    """아이템 모델"""
+    
+    title: Mapped[str] = mapped_column(index=True, nullable=False)
+    description: Mapped[str | None] = mapped_column(default=None)
+    owner_id: Mapped[int] = mapped_column(ForeignKey("user.id"), nullable=False)
     
     # 관계 설정
     owner = relationship("User", back_populates="items")

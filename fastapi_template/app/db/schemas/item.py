@@ -6,22 +6,27 @@
 # - 데이터 직렬화/역직렬화
 """
 
-from pydantic import BaseModel
-from typing import Optional
+from app.common.schemas.base_schema import BaseSchema, TimeStampMixin
 
-class ItemBase(BaseModel):
+class ItemBase(BaseSchema):
+    """아이템 기본 스키마"""
     title: str
-    description: Optional[str] = None
+    description: str | None = None
 
 class ItemCreate(ItemBase):
+    """아이템 생성 스키마"""
     pass
 
 class ItemUpdate(ItemBase):
+    """아이템 수정 스키마"""
     pass
 
-class Item(ItemBase):
+class ItemInDB(ItemBase, TimeStampMixin):
+    """데이터베이스 아이템 스키마"""
     id: int
     owner_id: int
 
-    class Config:
-        from_attributes = True
+class Item(ItemBase, TimeStampMixin):
+    """아이템 응답 스키마"""
+    id: int
+    owner_id: int
