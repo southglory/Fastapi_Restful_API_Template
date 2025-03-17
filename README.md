@@ -133,67 +133,15 @@ uvicorn app.main:app --reload
 
 ## 📁 프로젝트 구조
 
-```
-fastapi_template/
-├── app/                      # 애플리케이션 코드
-│   ├── api/                  # API 엔드포인트
-│   │   ├── routes/          # 라우터 정의
-│   │   │   ├── users.py     # 사용자 관리
-│   │   │   ├── items.py     # 아이템 관리
-│   │   │   ├── auth.py      # 인증
-│   │   │   └── __init__.py
-│   │   └── dependencies.py   # 의존성 관리
-│   ├── common/               # 재사용 가능한 공통 모듈
-│   │   ├── auth/            # 인증 관리
-│   │   ├── cache/           # 캐시 관리
-│   │   ├── config/          # 설정 관리
-│   │   ├── database/        # DB 연결 및 기본 클래스
-│   │   │   ├── base.py      # 기본 모델 클래스
-│   │   │   └── session.py   # DB 세션 관리
-│   │   ├── exceptions/      # 예외 처리
-│   │   ├── middleware/      # 미들웨어
-│   │   ├── monitoring/      # 상태 모니터링
-│   │   ├── schemas/         # 공통 스키마
-│   │   │   └── base_schema.py # 기본 스키마 클래스
-│   │   ├── security/        # 보안 기능
-│   │   ├── utils/          # 유틸리티
-│   │   └── validators/      # 데이터 검증
-│   ├── core/                # 핵심 설정
-│   │   ├── config.py       # 환경 설정
-│   │   └── security.py     # 보안 설정
-│   ├── db/                  # 데이터베이스
-│   │   ├── models/         # SQLAlchemy 모델
-│   │   │   ├── user.py     # 사용자 모델
-│   │   │   └── item.py     # 아이템 모델
-│   │   └── schemas/        # Pydantic 스키마
-│   │       ├── user.py     # 사용자 스키마
-│   │       ├── item.py     # 아이템 스키마
-│   │       └── token.py    # 토큰 스키마
-│   ├── services/           # 비즈니스 로직
-│   ├── tests/              # 테스트 코드
-│   ├── main.py            # 애플리케이션 진입점
-│   └── __init__.py        # 패키지 초기화
-├── .env.example           # 환경 변수 예시
-├── docker-compose.yml     # Docker 설정
-├── Dockerfile             # Docker 빌드
-└── requirements.txt       # 의존성 목록
-```
+프로젝트의 상세한 디렉토리 구조는 [py_project_tree.txt](py_project_tree.txt)를 참조하세요.
 
-### 향후 추가 예정 구조
+주요 디렉토리 설명:
 
-다음 구조들은 개발 진행 중에 추가될 예정입니다:
+- `app/api/`: API 엔드포인트와 라우터
+- `app/common/`: 재사용 가능한 공통 모듈
+- `app/core/`: 핵심 설정
+- `app/db/`: 데이터베이스 모델과 스키마
+- `app/services/`: 비즈니스 로직
+- `app/tests/`: 테스트 코드
 
-```
-fastapi_template/
-├── app/
-│   └── tests/
-│       ├── conftest.py    # 테스트 설정
-│       ├── unit/          # 단위 테스트
-│       └── integration/   # 통합 테스트
-├── alembic/               # DB 마이그레이션
-│   ├── versions/         # 마이그레이션 파일
-│   └── env.py           # Alembic 설정
-├── docs/                  # 문서
-│   └── database.md       # DB 설계 문서
-└── alembic.ini           # Alembic 설정
-```
+향후 추가될 구조에 대한 내용은 [기술 문서](fastapi_template/README.md)를 참조하세요.
