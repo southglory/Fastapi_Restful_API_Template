@@ -10,7 +10,8 @@
 4. [마이그레이션 파일 생성](#마이그레이션-파일-생성)
 5. [마이그레이션 적용](#마이그레이션-적용)
 6. [마이그레이션 롤백](#마이그레이션-롤백)
-7. [문제 해결](#일반적인-문제-해결)
+7. [개발 환경 설정](#개발-환경-설정)
+8. [문제 해결](#일반적인-문제-해결)
 
 ## Alembic 소개
 
@@ -146,6 +147,26 @@ def run_migrations_online() -> None:
 
 이 옵션들을 활성화하면 더 정확한 마이그레이션 스크립트가 생성됩니다.
 
+### 5. 인코딩 설정
+
+`alembic.ini` 파일에서 출력 인코딩을 UTF-8로 설정합니다:
+
+```ini
+# alembic.ini
+[alembic]
+# ...
+# the output encoding used when revision files
+# are written from script.py.mako
+output_encoding = utf-8
+```
+
+**중요**: Windows 환경에서는 인코딩 문제를 피하기 위해 `alembic.ini` 파일과 마이그레이션 메시지에 한글을 사용하지 마세요. 영어로 작성하는 것이 가장 간단한 해결책입니다.
+
+```bash
+# 영어로 마이그레이션 메시지 작성
+alembic revision --autogenerate -m "initial"
+```
+
 ## 마이그레이션 파일 생성
 
 ### 자동 마이그레이션 파일 생성
@@ -226,6 +247,67 @@ alembic downgrade 1a2b3c4d5e6f
 alembic downgrade base
 ```
 
+## 개발 환경 설정
+
+### SQLite 사용하기
+
+개발 환경에서는 PostgreSQL 대신 SQLite를 사용하여 간편하게 개발할 수 있습니다. 이를 위해 별도의 환경 설정 파일(`.env.dev`)을 사용합니다.
+
+1. **개발용 환경 설정 파일 생성**:
+
+```
+# .env.dev
+DATABASE_URL=sqlite:///./dev.db
+DB_ECHO_LOG=True
+SECRET_KEY=dev-secret-key-for-testing
+DEBUG=True
+```
+
+2. **config.py에 개발 환경 설정 추가**:
+
+```python
+# app/core/config.py
+
+# 기본 설정 클래스
+class Settings(BaseSettings):
+    # ... 기존 설정 ...
+    
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8"
+    )
+
+# 기본 설정 인스턴스
+settings = Settings()
+
+# 개발 환경 설정 클래스
+class DevSettings(Settings):
+    DEBUG: bool = True
+    DATABASE_URL: str = "sqlite:///./dev.db"
+    
+    model_config = SettingsConfigDict(
+        env_file=".env.dev",
+        env_file_encoding="utf-8"
+    )
+
+# 개발 환경 설정 인스턴스
+dev_settings = DevSettings()
+```
+
+3. **env.py에서 개발 환경 설정 사용**:
+
+```python
+# alembic/env.py
+
+# DB URL을 환경 변수에서 가져오기
+# 개발 환경에서는 dev_settings 사용
+from app.core.config import dev_settings
+
+config.set_main_option("sqlalchemy.url", dev_settings.DATABASE_URL)
+```
+
+이렇게 설정하면 개발 환경에서는 SQLite를 사용하고, 프로덕션 환경에서는 PostgreSQL을 사용할 수 있습니다.
+
 ## 마이그레이션 이력 확인
 
 현재 적용된 마이그레이션 이력을 확인합니다:
@@ -263,6 +345,16 @@ sqlalchemy.exc.OperationalError: (psycopg2.OperationalError) could not connect t
 1. 데이터베이스 서버가 실행 중인지 확인
 2. 데이터베이스 URL이 올바른지 확인
 3. 데이터베이스 사용자 권한 확인
+4. 개발 환경에서는 SQLite로 전환 (위에서 설명한 대로)
+
+### 인코딩 문제
+
+Windows 환경에서 인코딩 문제가 발생하는 경우, 가장 간단한 해결책은 한글 대신 영어를 사용하는 것입니다:
+
+```bash
+# 영어로 마이그레이션 메시지 작성
+alembic revision --autogenerate -m "initial"
+```
 
 ## 마이그레이션 관리 팁
 

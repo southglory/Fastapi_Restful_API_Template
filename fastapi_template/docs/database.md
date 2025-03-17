@@ -18,7 +18,8 @@ FastAPI 프로젝트에서 데이터베이스 연동은 다음과 같은 구성�
 - **SQLAlchemy ORM**: 객체 관계 매핑을 통한 데이터베이스 접근
 - **Pydantic 스키마**: 데이터 검증 및 직렬화/역직렬화
 - **Alembic**: 데이터베이스 마이그레이션 관리
-- **PostgreSQL**: 관계형 데이터베이스
+- **PostgreSQL**: 관계형 데이터베이스 (프로덕션 환경)
+- **SQLite**: 개발 환경에서 사용할 수 있는 경량 데이터베이스
 - **비동기 지원**: asyncpg 드라이버를 통한 비동기 데이터베이스 접근
 
 각 주제에 대한 자세한 내용은 위 목차의 링크를 참조하세요.
@@ -42,7 +43,9 @@ psycopg2-binary
 asyncpg
 ```
 
-### PostgreSQL 데이터베이스 준비
+### 데이터베이스 준비
+
+#### 프로덕션 환경: PostgreSQL
 
 1. PostgreSQL 설치 (또는 Docker 사용)
 2. 데이터베이스 생성:
@@ -50,6 +53,12 @@ asyncpg
    ```sql
    CREATE DATABASE fastapi_db;
    ```
+
+#### 개발 환경: SQLite
+
+개발 환경에서는 PostgreSQL 대신 SQLite를 사용할 수 있습니다. 이를 위해 `.env.dev` 파일을 생성하고 `app/core/config.py`에 개발 환경 설정을 추가합니다.
+
+자세한 설정 방법은 [마이그레이션 설정](./database/03-migrations.md#개발-환경-설정) 문서를 참조하세요.
 
 ### Alembic 초기화
 
