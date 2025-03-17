@@ -16,3 +16,4 @@ pytest
 httpx
 redis
 aioredis
+cryptography
