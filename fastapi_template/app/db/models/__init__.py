@@ -5,7 +5,7 @@
 # - Base 클래스 export
 """
 
-from app.db.base import Base
+from app.common.database.base import Base
 from app.db.models.user import User
 from app.db.models.item import Item
 

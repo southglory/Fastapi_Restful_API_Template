@@ -35,8 +35,6 @@ fastapi_template\app\common\validators: __init__.py
 fastapi_template\app\core: __init__.py
 fastapi_template\app\core: config.py
 fastapi_template\app\core: security.py
-fastapi_template\app\db: base.py
-fastapi_template\app\db: session.py
 fastapi_template\app\db\models: __init__.py
 fastapi_template\app\db\models: item.py
 fastapi_template\app\db\models: user.py
