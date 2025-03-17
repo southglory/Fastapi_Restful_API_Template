@@ -57,7 +57,7 @@ AsyncSessionLocal = sessionmaker(
 engine = create_engine(settings.DATABASE_URL, pool_pre_ping=True)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-async def get_db() -> AsyncSession:
+async def get_db() -> AsyncGenerator[AsyncSession, None]:
     """비동기 데이터베이스 세션 제공"""
     async with AsyncSessionLocal() as session:
         try:
@@ -102,11 +102,11 @@ class TimeStampMixin:
     """
     생성 및 수정 시간 필드를 제공하는 Mixin
     """
-    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    created_at = Column(DateTime, default=lambda: datetime.now(UTC), nullable=False)
     updated_at = Column(
         DateTime, 
-        default=datetime.utcnow, 
-        onupdate=datetime.utcnow, 
+        default=lambda: datetime.now(UTC), 
+        onupdate=lambda: datetime.now(UTC), 
         nullable=False
     )
 

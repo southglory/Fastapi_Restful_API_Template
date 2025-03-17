@@ -3,7 +3,7 @@
 # Description: SQLAlchemy 기본 설정 및 공통 모델
 """
 
-from datetime import datetime
+from datetime import datetime, UTC
 from typing import Any
 
 from sqlalchemy import Column, DateTime, Integer
@@ -28,11 +28,11 @@ class TimeStampMixin:
     """
     생성 및 수정 시간 필드를 제공하는 Mixin
     """
-    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    created_at = Column(DateTime, default=lambda: datetime.now(UTC), nullable=False)
     updated_at = Column(
         DateTime, 
-        default=datetime.utcnow, 
-        onupdate=datetime.utcnow, 
+        default=lambda: datetime.now(UTC), 
+        onupdate=lambda: datetime.now(UTC), 
         nullable=False
     )
 

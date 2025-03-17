@@ -27,8 +27,7 @@ app/
 `app/db/models/user.py`에 사용자 모델을 정의합니다:
 
 ```python
-from sqlalchemy import Boolean, Column, String
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.common.database.base import BaseModel
 
@@ -37,51 +36,49 @@ class User(BaseModel):
     """
     사용자 모델
     """
-    email = Column(String, unique=True, index=True, nullable=False)
-    hashed_password = Column(String, nullable=False)
-    full_name = Column(String, nullable=True)
-    is_active = Column(Boolean, default=True)
-    is_superuser = Column(Boolean, default=False)
+    email: Mapped[str] = mapped_column(unique=True, index=True)
+    username: Mapped[str] = mapped_column(index=True)
+    hashed_password: Mapped[str] = mapped_column(nullable=False)
+    is_active: Mapped[bool] = mapped_column(default=True)
+    is_admin: Mapped[bool] = mapped_column(default=False)
     
-    # 관계 정의
-    items = relationship("Item", back_populates="owner")
+    # 관계 설정 - 사용자가 삭제되면 연관된 아이템도 함께 삭제
+    items = relationship("Item", back_populates="owner", cascade="all, delete-orphan")
     
-    def __repr__(self):
-        return f"<User {self.email}>"
+    def __repr__(self) -> str:
+        return f"User(id={self.id}, email={self.email}, username={self.username})"
 ```
 
-### 주요 필드
+필드 설명:
 
 - **email**: 사용자 이메일 (고유 식별자)
+- **username**: 사용자 이름
 - **hashed_password**: 암호화된 비밀번호
-- **full_name**: 사용자 전체 이름 (선택 사항)
 - **is_active**: 계정 활성화 상태
-- **is_superuser**: 관리자 권한 여부
+- **is_admin**: 관리자 권한 여부
 
 ## 아이템 모델
 
 `app/db/models/item.py`에 아이템 모델을 정의합니다:
 
 ```python
-from sqlalchemy import Column, ForeignKey, String, Text
-from sqlalchemy.orm import relationship
+from sqlalchemy import ForeignKey
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.common.database.base import BaseModel
 
-
 class Item(BaseModel):
-    """
-    아이템 모델
-    """
-    title = Column(String(100), index=True, nullable=False)
-    description = Column(Text, nullable=True)
-    owner_id = Column(Integer, ForeignKey("user.id"), nullable=False)
+    """아이템 모델"""
     
-    # 관계 정의
+    title: Mapped[str] = mapped_column(index=True, nullable=False)
+    description: Mapped[str | None] = mapped_column(default=None)
+    owner_id: Mapped[int] = mapped_column(ForeignKey("user.id"), nullable=False)
+    
+    # 관계 설정
     owner = relationship("User", back_populates="items")
-    
-    def __repr__(self):
-        return f"<Item {self.title}>"
+
+    def __repr__(self) -> str:
+        return f"Item(id={self.id}, title={self.title}, owner_id={self.owner_id})"
 ```
 
 ### 주요 필드

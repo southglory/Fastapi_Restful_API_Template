@@ -3,6 +3,7 @@
 # Description: 데이터베이스 세션 관리
 """
 
+from typing import AsyncGenerator
 from sqlalchemy import create_engine
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
@@ -30,7 +31,7 @@ AsyncSessionLocal = sessionmaker(
 engine = create_engine(settings.DATABASE_URL, pool_pre_ping=True)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-async def get_db() -> AsyncSession:
+async def get_db() -> AsyncGenerator[AsyncSession, None]:
     """비동기 데이터베이스 세션 제공"""
     async with AsyncSessionLocal() as session:
         try:
