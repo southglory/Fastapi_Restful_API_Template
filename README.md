@@ -133,7 +133,7 @@ uvicorn app.main:app --reload
 
 ## 📁 프로젝트 구조
 
-프로젝트의 상세한 디렉토리 구조는 [py_project_tree.txt](py_project_tree.txt)를 참조하세요.
+프로젝트의 상세한 디렉토리 구조는 [py_project_tree.txt](fastapi_template/py_project_tree.txt)를 참조하세요.
 
 주요 디렉토리 설명:
 
