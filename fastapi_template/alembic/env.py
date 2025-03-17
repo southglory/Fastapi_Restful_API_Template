@@ -1,7 +1,6 @@
 from logging.config import fileConfig
 
-from sqlalchemy import engine_from_config
-from sqlalchemy import pool
+from sqlalchemy import engine_from_config, pool
 
 from alembic import context
 
@@ -10,27 +9,34 @@ import sys
 from pathlib import Path
 
 # 프로젝트 루트 디렉토리를 Python 경로에 추가
-sys.path.append(str(Path(__file__).parent.parent))
+BASE_DIR = Path(__file__).parent.parent
+sys.path.append(str(BASE_DIR))
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
 
 # DB URL을 환경 변수에서 가져오기
-from app.core.config import settings
-config.set_main_option("sqlalchemy.url", settings.DATABASE_URL)
+# 개발 환경에서는 dev_settings 사용
+from app.core.config import dev_settings
+
+config.set_main_option("sqlalchemy.url", dev_settings.DATABASE_URL)
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-# add your model's MetaData object here
-# for 'autogenerate' support
+# 모델 가져오기
 from app.common.database.base import Base
+
+# 모델 임포트 - 이렇게 하면 Base.metadata에 테이블이 등록됩니다
 from app.db.models.user import User
 from app.db.models.item import Item
 
+# add your model's MetaData object here
+# for 'autogenerate' support
+# from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
 target_metadata = Base.metadata
 
@@ -79,10 +85,10 @@ def run_migrations_online() -> None:
 
     with connectable.connect() as connection:
         context.configure(
-            connection=connection, 
+            connection=connection,
             target_metadata=target_metadata,
             compare_type=True,  # 컬럼 타입 변경 감지
-            compare_server_default=True  # 기본값 변경 감지
+            compare_server_default=True,  # 기본값 변경 감지
         )
 
         with context.begin_transaction():
