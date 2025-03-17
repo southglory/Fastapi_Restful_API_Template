@@ -10,6 +10,7 @@
 4. [마이그레이션 파일 생성](#마이그레이션-파일-생성)
 5. [마이그레이션 적용](#마이그레이션-적용)
 6. [마이그레이션 롤백](#마이그레이션-롤백)
+7. [문제 해결](#일반적인-문제-해결)
 
 ## Alembic 소개
 
@@ -23,9 +24,9 @@ Alembic은 SQLAlchemy를 위한 데이터베이스 마이그레이션 도구입�
 
 ## Alembic 설치
 
-### 패키지 설치
+Alembic은 이미 프로젝트 의존성에 포함되어 있습니다. 별도 설치가 필요하지 않습니다.
 
-Alembic은 pip를 사용하여 설치할 수 있습니다:
+새 프로젝트에서는 다음과 같이 설치할 수 있습니다:
 
 ```bash
 pip install alembic
@@ -38,19 +39,11 @@ pip install alembic
 alembic
 ```
 
-### 설치 확인
-
-설치가 완료되면 다음 명령으로 Alembic 버전을 확인할 수 있습니다:
-
-```bash
-alembic --version
-```
-
 ## 초기 설정
 
 ### 1. Alembic 초기화
 
-프로젝트 루트 디렉토리에서 다음 명령을 실행합니다:
+프로젝트에 이미 Alembic이 설정되어 있습니다. 새로운 프로젝트에서는 다음 명령으로 초기화할 수 있습니다:
 
 ```bash
 alembic init alembic
@@ -69,25 +62,9 @@ fastapi_template/
 └── alembic.ini
 ```
 
-각 파일의 역할:
+### 2. 데이터베이스 URL 설정
 
-- `alembic.ini`: Alembic 설정 파일
-- `alembic/env.py`: 마이그레이션 환경 설정
-- `alembic/versions/`: 마이그레이션 스크립트 저장 디렉토리
-- `alembic/script.py.mako`: 마이그레이션 스크립트 템플릿
-
-### 2. Alembic 설정 파일 수정
-
-`alembic.ini` 파일에서 데이터베이스 URL을 설정합니다:
-
-```ini
-# alembic.ini
-[alembic]
-# ...
-sqlalchemy.url = postgresql://postgres:postgres@localhost:5432/fastapi_db
-```
-
-또는 환경 변수에서 URL을 가져오도록 설정할 수 있습니다:
+`alembic.ini` 파일에서 데이터베이스 URL을 직접 설정하지 않고, 환경 변수에서 가져오도록 설정합니다:
 
 ```ini
 # alembic.ini
@@ -96,7 +73,13 @@ sqlalchemy.url = postgresql://postgres:postgres@localhost:5432/fastapi_db
 # sqlalchemy.url = driver://user:pass@localhost/dbname
 ```
 
-이 경우 `env.py`에서 URL을 설정합니다.
+`env.py`에서 URL을 설정합니다:
+
+```python
+# DB URL을 환경 변수에서 가져오기
+from app.core.config import settings
+config.set_main_option("sqlalchemy.url", settings.DATABASE_URL)
+```
 
 ### 3. Alembic 환경 설정
 
@@ -110,32 +93,6 @@ from sqlalchemy import engine_from_config, pool
 
 from alembic import context
 
-# 모델 가져오기
-from app.common.database.base import Base
-from app.db.models import User, Item  # 모든 모델 가져오기
-
-# this is the Alembic Config object
-config = context.config
-
-# DB URL을 환경 변수에서 가져오기
-from app.core.config import settings
-config.set_main_option("sqlalchemy.url", settings.DATABASE_URL)
-
-# Interpret the config file for Python logging
-fileConfig(config.config_file_name)
-
-# MetaData 객체 설정
-target_metadata = Base.metadata
-
-# ...
-```
-
-### 4. Python 경로 설정
-
-Alembic이 애플리케이션 모듈을 찾을 수 있도록 Python 경로를 설정해야 할 수 있습니다. 이는 `PYTHONPATH` 환경 변수를 설정하거나 다음과 같이 `env.py` 파일을 수정하여 수행할 수 있습니다:
-
-```python
-# alembic/env.py
 import os
 import sys
 from pathlib import Path
@@ -143,8 +100,51 @@ from pathlib import Path
 # 프로젝트 루트 디렉토리를 Python 경로에 추가
 sys.path.append(str(Path(__file__).parent.parent))
 
-# 나머지 코드...
+# Alembic Config 객체
+config = context.config
+
+# DB URL을 환경 변수에서 가져오기
+from app.core.config import settings
+config.set_main_option("sqlalchemy.url", settings.DATABASE_URL)
+
+# 로깅 설정
+if config.config_file_name is not None:
+    fileConfig(config.config_file_name)
+
+# 모델 가져오기
+from app.common.database.base import Base
+from app.db.models.user import User
+from app.db.models.item import Item
+
+# MetaData 객체 설정
+target_metadata = Base.metadata
+
+# ... 나머지 코드 ...
 ```
+
+### 4. 마이그레이션 감지 옵션 설정
+
+`env.py` 파일의 `run_migrations_online` 함수에서 다음과 같은 중요한 옵션을 설정합니다:
+
+```python
+def run_migrations_online() -> None:
+    # ...
+    with connectable.connect() as connection:
+        context.configure(
+            connection=connection, 
+            target_metadata=target_metadata,
+            compare_type=True,  # 컬럼 타입 변경 감지
+            compare_server_default=True  # 기본값 변경 감지
+        )
+    # ...
+```
+
+이 옵션들의 역할:
+
+- **compare_type=True**: 컬럼 데이터 타입 변경을 감지합니다. 예를 들어 `String(50)`에서 `String(100)`으로 변경된 경우를 감지합니다.
+- **compare_server_default=True**: 컬럼의 기본값(DEFAULT) 변경을 감지합니다. 예를 들어 `default=0`에서 `default=1`로 변경된 경우를 감지합니다.
+
+이 옵션들을 활성화하면 더 정확한 마이그레이션 스크립트가 생성됩니다.
 
 ## 마이그레이션 파일 생성
 
@@ -162,38 +162,7 @@ alembic revision --autogenerate -m "설명"
 alembic revision --autogenerate -m "Create user and item tables"
 ```
 
-이 명령은 `alembic/versions/` 디렉토리에 새로운 마이그레이션 파일을 생성합니다:
-
-```python
-# alembic/versions/1a2b3c4d5e6f_create_user_and_item_tables.py
-"""Create user and item tables
-
-Revision ID: 1a2b3c4d5e6f
-Revises: 
-Create Date: 2023-01-01 12:00:00.000000
-
-"""
-from alembic import op
-import sqlalchemy as sa
-
-# ...
-
-def upgrade():
-    # 테이블 생성 코드
-    op.create_table(
-        'user',
-        sa.Column('id', sa.Integer(), nullable=False),
-        sa.Column('email', sa.String(), nullable=False),
-        # ...
-        sa.PrimaryKeyConstraint('id')
-    )
-    # ...
-
-def downgrade():
-    # 테이블 삭제 코드
-    op.drop_table('item')
-    op.drop_table('user')
-```
+이 명령은 `alembic/versions/` 디렉토리에 새로운 마이그레이션 파일을 생성합니다.
 
 ### 수동 마이그레이션 파일 생성
 
@@ -294,6 +263,16 @@ sqlalchemy.exc.OperationalError: (psycopg2.OperationalError) could not connect t
 1. 데이터베이스 서버가 실행 중인지 확인
 2. 데이터베이스 URL이 올바른지 확인
 3. 데이터베이스 사용자 권한 확인
+
+## 마이그레이션 관리 팁
+
+1. **마이그레이션 파일 검토**: 자동 생성된 마이그레이션 파일을 항상 검토하여 의도한 변경사항이 정확히 반영되었는지 확인하세요.
+
+2. **테스트 환경에서 먼저 적용**: 프로덕션 환경에 적용하기 전에 테스트 환경에서 마이그레이션을 테스트하세요.
+
+3. **마이그레이션 히스토리 관리**: 마이그레이션 히스토리를 확인하려면 `alembic history` 명령을 사용하세요.
+
+4. **데이터 마이그레이션**: 스키마 변경과 함께 데이터 마이그레이션이 필요한 경우, 마이그레이션 스크립트에 데이터 변환 로직을 추가하세요.
 
 ## 다음 단계
 
