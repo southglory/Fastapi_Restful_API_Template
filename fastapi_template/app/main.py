@@ -13,7 +13,7 @@ from app.api import api_router
 from app.common.database import Base, engine
 from app.common.exceptions import add_exception_handlers
 from app.common.utils.cache import get_redis_connection
-from app.core.config import settings
+from app.common.config import settings
 
 # 로거 설정
 logging.basicConfig(
@@ -30,7 +30,7 @@ async def lifespan(app: FastAPI):
     """
     # 애플리케이션 시작 시 수행할 작업
     logger.info("애플리케이션 시작 중...")
-    
+
     # Redis 연결 초기화
     try:
         redis = await get_redis_connection()
@@ -38,9 +38,9 @@ async def lifespan(app: FastAPI):
         logger.info("Redis 연결 성공")
     except Exception as e:
         logger.error(f"Redis 연결 실패: {e}")
-    
+
     yield
-    
+
     # 애플리케이션 종료 시 수행할 작업
     logger.info("애플리케이션 종료 중...")
 
@@ -69,10 +69,7 @@ app.add_middleware(
 )
 
 # API 라우터 등록
-app.include_router(
-    api_router, 
-    prefix=settings.API_V1_STR
-)
+app.include_router(api_router, prefix=settings.API_V1_STR)
 
 
 @app.get("/")
@@ -84,7 +81,7 @@ async def root():
         "app_name": settings.PROJECT_NAME,
         "version": "0.1.0",
         "status": "healthy",
-        "docs_url": "/docs"
+        "docs_url": "/docs",
     }
 
 

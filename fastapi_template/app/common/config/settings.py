@@ -1,5 +1,5 @@
 """
-# File: fastapi_template/app/core/config.py
+# File: fastapi_template/app/common/config/settings.py
 # Description: 애플리케이션 설정 관리
 """
 
