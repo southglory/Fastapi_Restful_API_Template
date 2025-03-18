@@ -6,17 +6,15 @@
 
 ### 기본 가이드
 
-- [테스트 개요](testing/overview.md) - 프로젝트의 테스트 철학과 접근 방식
-- [테스트 퀵 스타트](testing/quick_start.md) - 빠르게 테스트를 시작하는 방법
-- [테스트 실행 방법](testing/running_tests.md) - 다양한 테스트 실행 명령어와 옵션
-- [테스트 구조](testing/structure.md) - 테스트 코드의 디렉토리 구조와 조직 방법
-- [테스트 도구 가이드](testing/tools.md) - 사용되는 테스트 도구와 라이브러리 소개
-- [테스트 작성 모범 사례](testing/best_practices.md) - 효과적인 테스트 작성 방법
-- [공통 테스트 패턴](testing/common_test_patterns.md) - 공통 테스트 패턴과 템플릿
+- [테스트 개요 및 구조](testing/01-test_overview.md) - 프로젝트의 테스트 철학과 접근 방식
+- [테스트 시작 및 실행 가이드](testing/02-test_guide.md) - 테스트 시작 방법과 다양한 실행 옵션
+- [테스트 모범 사례 및 패턴](testing/03-test_practices.md) - 효과적인 테스트 작성 방법과 공통 패턴
+- [모듈별 테스트 가이드](testing/04-test_modules.md) - 각 모듈의 테스트 방법에 대한 개요
+- [테스트 도구 가이드](testing/05-test_tools.md) - 사용되는 테스트 도구와 라이브러리 소개
 
 ### 모듈별 테스트 가이드
 
-- [모듈별 테스트 가이드 개요](testing/module_guides.md) - 각 모듈의 테스트 방법에 대한 개요
+- [모듈별 테스트 가이드 개요](testing/04-test_modules.md) - 각 모듈의 테스트 방법에 대한 개요
 - **모듈별 상세 가이드** - 각 모듈의 상세 테스트 방법은 `testing/modules/` 디렉토리 내 문서 참조
 
 ## 테스트 용이성 순위
@@ -73,4 +71,4 @@ def test_validate_email_parametrized(email, expected):
     assert validate_email(email) == expected
 ```
 
-더 자세한 내용은 [테스트 퀵 스타트](testing/quick_start.md) 문서를 참고하세요.
+더 자세한 내용은 [테스트 시작 및 실행 가이드](testing/02-test_guide.md) 문서를 참고하세요.
