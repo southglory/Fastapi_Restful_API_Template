@@ -78,7 +78,7 @@ fastapi_template/
 
 ```python
 # DB URL을 환경 변수에서 가져오기
-from app.core.config import settings
+from app.common.config import settings
 config.set_main_option("sqlalchemy.url", settings.DATABASE_URL)
 ```
 
@@ -105,8 +105,10 @@ sys.path.append(str(Path(__file__).parent.parent))
 config = context.config
 
 # DB URL을 환경 변수에서 가져오기
-from app.core.config import settings
-config.set_main_option("sqlalchemy.url", settings.DATABASE_URL)
+# 개발 환경에서는 dev_settings 사용
+from app.common.config import dev_settings
+
+config.set_main_option("sqlalchemy.url", dev_settings.DATABASE_URL)
 
 # 로깅 설정
 if config.config_file_name is not None:
@@ -160,21 +162,17 @@ def run_migrations_online() -> None:
 output_encoding = utf-8
 ```
 
-**중요**: Windows 환경에서는 인코딩 문제를 피하기 위해 `alembic.ini` 파일과 마이그레이션 메시지에 한글을 사용하지 마세요. 영어로 작성하는 것이 가장 간단한 해결책입니다.
-
-```bash
-# 영어로 마이그레이션 메시지 작성
-alembic revision --autogenerate -m "initial"
-```
-
 ## 마이그레이션 파일 생성
 
 ### 자동 마이그레이션 파일 생성
 
 모델 변경 사항을 감지하여 자동으로 마이그레이션 파일을 생성합니다:
 
+**중요**: Windows 환경에서는 인코딩 문제를 피하기 위해 `alembic.ini` 파일과 마이그레이션 메시지에 한글을 사용하지 마세요. 영어로 작성하는 것이 가장 간단한 해결책입니다.
+
 ```bash
-alembic revision --autogenerate -m "설명"
+# 영어로 마이그레이션 메시지 작성
+alembic revision --autogenerate -m "initial"
 ```
 
 예시:
@@ -266,7 +264,7 @@ DEBUG=True
 2. **config.py에 개발 환경 설정 추가**:
 
 ```python
-# app/core/config.py
+# app/common/config.py
 
 # 기본 설정 클래스
 class Settings(BaseSettings):
@@ -274,7 +272,8 @@ class Settings(BaseSettings):
     
     model_config = SettingsConfigDict(
         env_file=".env",
-        env_file_encoding="utf-8"
+        env_file_encoding="utf-8",
+        case_sensitive=True
     )
 
 # 기본 설정 인스턴스
@@ -287,7 +286,8 @@ class DevSettings(Settings):
     
     model_config = SettingsConfigDict(
         env_file=".env.dev",
-        env_file_encoding="utf-8"
+        env_file_encoding="utf-8",
+        case_sensitive=True
     )
 
 # 개발 환경 설정 인스턴스
@@ -301,7 +301,7 @@ dev_settings = DevSettings()
 
 # DB URL을 환경 변수에서 가져오기
 # 개발 환경에서는 dev_settings 사용
-from app.core.config import dev_settings
+from app.common.config import dev_settings
 
 config.set_main_option("sqlalchemy.url", dev_settings.DATABASE_URL)
 ```
