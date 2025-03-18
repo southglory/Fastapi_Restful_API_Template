@@ -18,7 +18,7 @@ config = context.config
 
 # DB URL을 환경 변수에서 가져오기
 # 개발 환경에서는 dev_settings 사용
-from app.core.config import dev_settings
+from app.common.config import dev_settings
 
 config.set_main_option("sqlalchemy.url", dev_settings.DATABASE_URL)
 
