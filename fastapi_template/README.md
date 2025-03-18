@@ -49,13 +49,18 @@
 주요 디렉토리 설명:
 
 - `app/api/`: API 엔드포인트와 라우터
-- `app/common/`: 재사용 가능한 공통 모듈
-  - `app/common/auth/`: 인증 관련 기능
-  - `app/common/config/`: 애플리케이션 설정
-  - `app/common/database/`: 데이터베이스 연결 및 기본 설정
-  - `app/common/exceptions/`: 예외 처리
-  - `app/common/schemas/`: 공통 스키마
-  - `app/common/utils/`: 유틸리티 함수
+- `app/common/`: 재사용 가능한 공통 모듈 ([상세 문서](docs/common__overview.md))
+  - `app/common/auth/`: 인증 관련 기능 ([상세](docs/common_auth.md))
+  - `app/common/config/`: 애플리케이션 설정 ([상세](docs/common_config.md))
+  - `app/common/database/`: 데이터베이스 연결 및 기본 설정 ([상세](docs/common_database.md))
+  - `app/common/exceptions/`: 예외 처리 ([상세](docs/common_exceptions.md))
+  - `app/common/schemas/`: 공통 스키마 ([상세](docs/common_schemas.md))
+  - `app/common/utils/`: 유틸리티 함수 ([상세](docs/common_utils.md))
+  - `app/common/cache/`: 캐싱 기능 ([상세](docs/common_cache.md))
+  - `app/common/security/`: 보안 관련 기능 ([상세](docs/common_security.md))
+  - `app/common/middleware/`: 미들웨어 컴포넌트 ([상세](docs/common_middleware.md))
+  - `app/common/monitoring/`: 상태 모니터링 및 로깅 ([상세](docs/common_monitoring.md))
+  - `app/common/validators/`: 데이터 검증 유틸리티 ([상세](docs/common_validators.md))
 - `app/db/`: 데이터베이스 모델과 스키마
   - `app/db/models/`: SQLAlchemy 모델
   - `app/db/schemas/`: Pydantic 스키마
@@ -77,11 +82,29 @@ async def protected_route():
 ### 캐시 시스템
 
 ```python
-from app.common.utils.cache import cached
+from app.common.cache.redis_client import cached
 
 @cached(prefix="user_data", ttl=3600)
 async def get_user_data(user_id: int):
     return await db.get_user(user_id)
+```
+
+### 데이터 검증
+
+```python
+from app.common.validators import validate_email, validate_password_strength
+
+def register_user(user_data: dict):
+    # 이메일 검증
+    if not validate_email(user_data.get("email")):
+        raise ValidationError("유효하지 않은 이메일 형식입니다")
+    
+    # 비밀번호 강도 검증
+    is_valid, error_msg = validate_password_strength(user_data.get("password"))
+    if not is_valid:
+        raise ValidationError(error_msg)
+    
+    # 사용자 등록 로직...
 ```
 
 ### 응답 처리

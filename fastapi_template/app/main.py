@@ -12,7 +12,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.api import api_router
 from app.common.database import Base, engine
 from app.common.exceptions import add_exception_handlers
-from app.common.utils.cache import get_redis_connection
+from app.common.cache.redis_client import get_redis_connection
 from app.common.config import settings
 
 # 로거 설정

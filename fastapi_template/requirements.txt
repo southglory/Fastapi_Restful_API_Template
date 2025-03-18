@@ -24,3 +24,11 @@ redis
 python-dotenv
 httpx
 tenacity
+python-magic
+
+# 개발 및 테스트 도구
+mypy
+pytest
+pytest-asyncio
+types-passlib
+types-python-jose

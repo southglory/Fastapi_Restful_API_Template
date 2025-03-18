@@ -7,3 +7,5 @@
 from app.api.routes.users import router as users_router
 from app.api.routes.items import router as items_router
 from app.api.routes.auth import router as auth_router
+
+__all__ = ["users_router", "items_router", "auth_router"]
