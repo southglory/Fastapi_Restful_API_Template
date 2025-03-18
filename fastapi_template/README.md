@@ -50,18 +50,19 @@
 주요 디렉토리 설명:
 
 - `app/api/`: API 엔드포인트와 라우터
-- `app/common/`: 재사용 가능한 공통 모듈 ([상세 문서](docs/common__overview.md))
-  - `app/common/auth/`: 인증 관련 기능 ([상세](docs/common_auth.md))
-  - `app/common/config/`: 애플리케이션 설정 ([상세](docs/common_config.md))
-  - `app/common/database/`: 데이터베이스 연결 및 기본 설정 ([상세](docs/common_database.md))
-  - `app/common/exceptions/`: 예외 처리 ([상세](docs/common_exceptions.md))
-  - `app/common/schemas/`: 공통 스키마 ([상세](docs/common_schemas.md))
-  - `app/common/utils/`: 유틸리티 함수 ([상세](docs/common_utils.md))
-  - `app/common/cache/`: 캐싱 기능 ([상세](docs/common_cache.md))
-  - `app/common/security/`: 보안 관련 기능 ([상세](docs/common_security.md))
-  - `app/common/middleware/`: 미들웨어 컴포넌트 ([상세](docs/common_middleware.md))
-  - `app/common/monitoring/`: 상태 모니터링 및 로깅 ([상세](docs/common_monitoring.md))
-  - `app/common/validators/`: 데이터 검증 유틸리티 ([상세](docs/common_validators.md))
+- `app/common/`: 재사용 가능한 공통 모듈 ([상세 문서](docs/common_modules.md))
+  - `app/common/auth/`: 인증 관련 기능 ([상세](docs/common_modules/common_auth.md))
+  - `app/common/cache/`: 캐싱 기능 ([상세](docs/common_modules/common_cache.md))
+  - `app/common/config/`: 애플리케이션 설정 ([상세](docs/common_modules/common_config.md))
+  - `app/common/database/`: 데이터베이스 연결 및 기본 설정 ([상세](docs/common_modules/common_database.md))
+  - `app/common/dependencies/`: 의존성 주입 함수 ([상세](docs/common_modules/common_dependencies.md))
+  - `app/common/exceptions/`: 예외 처리 ([상세](docs/common_modules/common_exceptions.md))
+  - `app/common/middleware/`: 미들웨어 컴포넌트 ([상세](docs/common_modules/common_middleware.md))
+  - `app/common/monitoring/`: 상태 모니터링 및 로깅 ([상세](docs/common_modules/common_monitoring.md))
+  - `app/common/schemas/`: 공통 스키마 ([상세](docs/common_modules/common_schemas.md))
+  - `app/common/security/`: 보안 관련 기능 ([상세](docs/common_modules/common_security.md))
+  - `app/common/utils/`: 유틸리티 함수 ([상세](docs/common_modules/common_utils.md))
+  - `app/common/validators/`: 데이터 검증 유틸리티 ([상세](docs/common_modules/common_validators.md))
 - `app/db/`: 데이터베이스 모델과 스키마
   - `app/db/models/`: SQLAlchemy 모델
   - `app/db/schemas/`: Pydantic 스키마
@@ -199,6 +200,7 @@ pytest
 테스트 작성과 실행에 대한 자세한 내용은 [테스트 가이드](docs/testing_guide.md) 문서를 참조하세요.
 
 주요 내용:
+
 - 테스트 구조와 설계
 - 모듈별 테스트 방법
 - 테스트 용이성 분석
