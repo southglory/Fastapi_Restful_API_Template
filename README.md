@@ -28,21 +28,14 @@ cp .env.example .env
 docker-compose up -d
 ```
 
-상세한 설정 및 실행 방법은 [기술 문서](fastapi_template/README.md)를 참조하세요.
-
 ## 📚 문서
 
 - **API 문서**: <http://localhost:8000/docs> (서버 실행 시)
-- **상세 문서**: [기술 문서](fastapi_template/README.md)
-- **아키텍처**: [아키텍처 설계](fastapi_template/docs/architecture.md)
-- **모듈 문서**: [공통 모듈 문서](fastapi_template/docs/common_modules.md)
-- **개발 가이드**: [개발 계획](fastapi_template/docs/development_plan.md)
-- **테스트 가이드**: [테스트 작성/실행](fastapi_template/docs/testing_guide.md)
+- **기술 문서**: [상세 문서](fastapi_template/README.md)
 
 ## 🤝 기여 및 지원
 
 - ⭐ **스타**: 저장소에 스타를 눌러주세요!
-- 🔄 **공유**: 동료, 친구, SNS에 이 프로젝트를 공유해주세요.
 - 💬 **피드백**: 이슈를 통해 개선점이나 아이디어를 제안해주세요.
 - 👥 **협업**: 함께 일하고 싶으시다면 이메일(<devramyun@gmail.com>)로 연락주세요!
 

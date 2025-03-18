@@ -37,6 +37,7 @@ fastapi_template\app\common\monitoring: __init__.py
 fastapi_template\app\common\monitoring: health_check.py
 fastapi_template\app\common\schemas: __init__.py
 fastapi_template\app\common\schemas: base_schema.py
+fastapi_template\app\common\schemas: schema_examples.py
 fastapi_template\app\common\security: __init__.py
 fastapi_template\app\common\security: encryption.py
 fastapi_template\app\common\utils: __init__.py
