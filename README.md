@@ -103,7 +103,7 @@ uvicorn app.main:app --reload
 - **API 문서**: <http://localhost:8000/docs>
 - **상세 문서**: [기술 문서](fastapi_template/README.md)
 - **아키텍처 문서**: [아키텍처 설계](fastapi_template/docs/architecture.md)
-- **모듈 문서**: [공통 모듈 개요](fastapi_template/docs/common__overview.md)
+- **모듈 문서**: [공통 모듈 문서](fastapi_template/docs/common_modules.md)
 - **개발 가이드**: [개발 계획](fastapi_template/docs/development_plan.md)
 - **테스트 가이드**: [테스트 작성 및 실행](fastapi_template/docs/testing_guide.md)
 

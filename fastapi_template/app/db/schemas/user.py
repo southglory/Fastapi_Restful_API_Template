@@ -6,32 +6,52 @@
 # - 데이터 직렬화/역직렬화
 """
 
-from pydantic import EmailStr
+from pydantic import EmailStr, Field
+from typing import Optional
 
-from app.common.schemas.base_schema import BaseSchema, TimeStampMixin
-
-class UserBase(BaseSchema):
-    """사용자 기본 스키마"""
-    email: EmailStr
-    username: str
-    is_active: bool = True
-    is_admin: bool = False
-
-class UserCreate(UserBase):
-    """사용자 생성 스키마"""
-    password: str
-
-class UserUpdate(UserBase):
-    """사용자 수정 스키마"""
-    password: str | None = None
-
-class UserInDB(UserBase, TimeStampMixin):
-    """데이터베이스 사용자 스키마"""
-    id: int
-    hashed_password: str
-
-class User(UserBase, TimeStampMixin):
-    """사용자 응답 스키마"""
-    id: int
+from app.common.schemas.base_schema import (
+    CreateSchema,
+    ReadSchema,
+    UpdateSchema,
+    InternalSchema,
+    TimeStampMixin,
+)
 
 
+# 사용자 공통 속성
+class UserBase:
+    """사용자 공통 속성"""
+
+    email: EmailStr = Field(..., description="사용자 이메일")
+    username: str = Field(..., description="사용자 이름")
+    is_active: bool = Field(True, description="계정 활성화 상태")
+    is_admin: bool = Field(False, description="관리자 권한 여부")
+
+
+class UserCreate(CreateSchema, UserBase):
+    """사용자 생성 요청 스키마 (외부 → 시스템)"""
+
+    password: str = Field(..., min_length=8, description="사용자 비밀번호")
+
+
+class UserUpdate(UpdateSchema, UserBase):
+    """사용자 정보 업데이트 요청 스키마 (외부 → 시스템)"""
+
+    email: Optional[EmailStr] = Field(None, description="사용자 이메일")
+    username: Optional[str] = Field(None, description="사용자 이름")
+    password: Optional[str] = Field(None, min_length=8, description="사용자 비밀번호")
+    is_active: Optional[bool] = Field(None, description="계정 활성화 상태")
+    is_admin: Optional[bool] = Field(None, description="관리자 권한 여부")
+
+
+class UserInDB(InternalSchema, UserBase, TimeStampMixin):
+    """데이터베이스 사용자 스키마 (시스템 내부용)"""
+
+    id: int = Field(..., description="사용자 ID")
+    hashed_password: str = Field(..., description="해시된 비밀번호")
+
+
+class User(ReadSchema, UserBase, TimeStampMixin):
+    """사용자 응답 스키마 (시스템 → 외부)"""
+
+    id: int = Field(..., description="사용자 ID")
