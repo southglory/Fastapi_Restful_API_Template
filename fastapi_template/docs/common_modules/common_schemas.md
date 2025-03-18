@@ -4,10 +4,115 @@
 
 ## 목차
 
+- [스키마 분류 체계](#스키마-분류-체계)
 - [기본 응답 스키마](#기본-응답-스키마)
 - [페이지네이션 스키마](#페이지네이션-스키마)
 - [기본 스키마 클래스](#기본-스키마-클래스)
 - [스키마 상속 및 확장](#스키마-상속-및-확장)
+
+## 스키마 분류 체계
+
+스키마는 데이터 흐름 방향과 사용 목적에 따라 체계적으로 분류됩니다. 이를 통해 코드의 가독성과 유지보수성을 향상시킬 수 있습니다.
+
+### 데이터 흐름 방향에 따른 분류
+
+```python
+from app.common.schemas.base_schema import InputSchema, OutputSchema, InternalSchema
+
+# 입력 스키마 - 외부에서 시스템으로 들어오는 데이터
+class UserInputSchema(InputSchema):
+    username: str
+    email: str
+
+# 출력 스키마 - 시스템에서 외부로 나가는 데이터
+class UserOutputSchema(OutputSchema):
+    id: int
+    username: str
+    email: str
+    created_at: datetime
+
+# 내부 스키마 - 시스템 내부에서만 사용되는 데이터
+class UserInternalSchema(InternalSchema):
+    id: int
+    username: str
+    email: str
+    hashed_password: str  # 내부용 필드
+```
+
+### 데이터 생명주기(CRUD)에 따른 분류
+
+```python
+from app.common.schemas.base_schema import CreateSchema, ReadSchema, UpdateSchema
+
+# 생성 스키마 (POST 요청)
+class UserCreateSchema(CreateSchema):
+    username: str
+    email: str
+    password: str
+
+# 조회 스키마 (GET 응답)
+class UserReadSchema(ReadSchema):
+    id: int
+    username: str
+    email: str
+    created_at: datetime
+
+# 업데이트 스키마 (PUT/PATCH 요청)
+class UserUpdateSchema(UpdateSchema):
+    username: Optional[str] = None
+    email: Optional[str] = None
+```
+
+### 서비스 간 통신을 위한 스키마
+
+```python
+from app.common.schemas.base_schema import ServiceSchema, EventSchema
+
+# 서비스 레이어 통신용 스키마
+class UserServiceSchema(ServiceSchema):
+    id: int
+    username: str
+    email: str
+    hashed_password: str
+    is_active: bool
+    login_attempts: int
+
+# 이벤트 메시지 스키마
+class UserCreatedEvent(EventSchema):
+    event_type: str = "user.created"
+    payload: Dict[str, Any] = {
+        "user_id": int,
+        "username": str,
+        "email": str
+    }
+```
+
+### 스키마 분류의 이점
+
+1. **명확한 책임 분리**: 각 스키마가 특정 목적만 담당합니다.
+2. **타입 안전성**: 데이터 흐름 경로가 명확해져 타입 에러를 방지합니다.
+3. **보안 강화**: 내부 데이터가 외부에 노출되는 것을 방지합니다.
+4. **확장성**: 새로운 요구사항에 맞게 스키마를 쉽게 확장할 수 있습니다.
+5. **문서화**: API가 요구하는 데이터 구조를 명확하게 표현합니다.
+
+### 스키마 사용 예시
+
+```python
+# API 계층
+@router.post("/users/", response_model=ResponseSchema[UserReadSchema])
+async def create_user(user_data: UserCreateSchema):
+    # 서비스 계층 호출
+    user_service = UserService()
+    new_user = await user_service.create_user(user_data)
+    
+    # 결과를 API 응답 스키마로 변환
+    return ResponseSchema.success(
+        data=UserReadSchema.model_validate(new_user),
+        message="사용자가 성공적으로 생성되었습니다"
+    )
+```
+
+자세한 예시는 `app.common.schemas.schema_examples` 모듈을 참조하세요.
 
 ## 기본 응답 스키마
 
@@ -43,6 +148,7 @@ async def get_user(user_id: int):
 ### 응답 형식
 
 성공 응답:
+
 ```json
 {
     "success": true,
@@ -56,6 +162,7 @@ async def get_user(user_id: int):
 ```
 
 오류 응답:
+
 ```json
 {
     "success": false,
@@ -94,11 +201,13 @@ async def get_users(pagination: PaginationParams = Depends()):
 ### 페이지네이션 요청 및 응답 형식
 
 요청 예시:
+
 ```
 GET /users?page=1&size=10
 ```
 
 응답 예시:
+
 ```json
 {
     "success": true,
@@ -226,4 +335,4 @@ ProductResponse = create_response_schema(ProductCreate, include_fields=["id", "c
 
 # 생성 스키마에서 업데이트 스키마 자동 생성 (모든 필드 선택 가능)
 ProductUpdate = create_update_schema(ProductCreate)
-``` 
+```
