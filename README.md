@@ -102,7 +102,7 @@ uvicorn app.main:app --reload
 
 - **API 문서**: <http://localhost:8000/docs>
 - **상세 문서**: [기술 문서](fastapi_template/README.md)
-- **데이터베이스 문서**: [DB 설계](docs/database.md)
+- **데이터베이스 문서**: [DB 설계](fastapi_template/docs/database.md)
 
 ## 💾 데이터베이스 구성
 
