@@ -18,6 +18,7 @@ fastapi_template\app\common: __init__.py
 fastapi_template\app\common\auth: __init__.py
 fastapi_template\app\common\auth: jwt.py
 fastapi_template\app\common\auth: password.py
+fastapi_template\app\common\cache: __init__.py
 fastapi_template\app\common\cache: redis_client.py
 fastapi_template\app\common\config: __init__.py
 fastapi_template\app\common\config: settings.py
@@ -27,13 +28,16 @@ fastapi_template\app\common\database: session.py
 fastapi_template\app\common\exceptions: __init__.py
 fastapi_template\app\common\exceptions: base.py
 fastapi_template\app\common\exceptions: handlers.py
+fastapi_template\app\common\middleware: __init__.py
 fastapi_template\app\common\middleware: logging_middleware.py
 fastapi_template\app\common\middleware: rate_limiter.py
+fastapi_template\app\common\monitoring: __init__.py
 fastapi_template\app\common\monitoring: health_check.py
+fastapi_template\app\common\schemas: __init__.py
 fastapi_template\app\common\schemas: base_schema.py
+fastapi_template\app\common\security: __init__.py
 fastapi_template\app\common\security: encryption.py
 fastapi_template\app\common\utils: __init__.py
-fastapi_template\app\common\utils: cache.py
 fastapi_template\app\common\utils: datetime.py
 fastapi_template\app\common\utils: pagination.py
 fastapi_template\app\common\validators: __init__.py
@@ -58,3 +62,4 @@ fastapi_template\docs\database: 03-migrations.md
 fastapi_template\docs\database: 04-schemas.md
 fastapi_template\docs\database: 05-services.md
 fastapi_template\docs\database: 06-docker.md
+fastapi_template\tests: test_common_modules.py

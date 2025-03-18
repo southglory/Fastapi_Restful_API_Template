@@ -7,3 +7,15 @@
 from app.db.schemas.user import User, UserCreate, UserUpdate, UserInDB
 from app.db.schemas.item import Item, ItemCreate, ItemUpdate
 from app.db.schemas.token import Token, TokenPayload
+
+__all__ = [
+    "User",
+    "UserCreate",
+    "UserUpdate",
+    "UserInDB",
+    "Item",
+    "ItemCreate",
+    "ItemUpdate",
+    "Token",
+    "TokenPayload",
+]
