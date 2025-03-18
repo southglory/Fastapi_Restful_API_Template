@@ -19,3 +19,6 @@ class User(BaseModel):
     
     # 관계 설정 - 사용자가 삭제되면 연관된 아이템도 함께 삭제
     items = relationship("Item", back_populates="owner", cascade="all, delete-orphan")
+
+    def __repr__(self) -> str:
+        return f"User(id={self.id}, email={self.email}, username={self.username})"

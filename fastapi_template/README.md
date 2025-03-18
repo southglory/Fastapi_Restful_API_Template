@@ -33,6 +33,7 @@
 #### 데이터베이스
 
 - **PostgreSQL**: 메인 데이터베이스 (with asyncpg)
+- **SQLite**: 개발 및 테스트용 데이터베이스 (with aiosqlite)
 - **Redis**: 캐싱 및 세션 관리
 
 #### 개발 도구
@@ -49,8 +50,15 @@
 
 - `app/api/`: API 엔드포인트와 라우터
 - `app/common/`: 재사용 가능한 공통 모듈
-- `app/core/`: 핵심 설정
+  - `app/common/auth/`: 인증 관련 기능
+  - `app/common/config/`: 애플리케이션 설정
+  - `app/common/database/`: 데이터베이스 연결 및 기본 설정
+  - `app/common/exceptions/`: 예외 처리
+  - `app/common/schemas/`: 공통 스키마
+  - `app/common/utils/`: 유틸리티 함수
 - `app/db/`: 데이터베이스 모델과 스키마
+  - `app/db/models/`: SQLAlchemy 모델
+  - `app/db/schemas/`: Pydantic 스키마
 - `app/services/`: 비즈니스 로직
 - `app/tests/`: 테스트 코드
 
@@ -59,7 +67,7 @@
 ### 인증 시스템
 
 ```python
-from app.common.auth.bearer import JWTBearer
+from app.common.auth import JWTBearer
 
 @app.get("/protected", dependencies=[Depends(JWTBearer())])
 async def protected_route():
@@ -69,9 +77,9 @@ async def protected_route():
 ### 캐시 시스템
 
 ```python
-from app.common.cache.redis_client import cache
+from app.common.utils.cache import cached
 
-@cache(expire=3600)
+@cached(prefix="user_data", ttl=3600)
 async def get_user_data(user_id: int):
     return await db.get_user(user_id)
 ```
@@ -90,12 +98,12 @@ async def get_item(item_id: int) -> ResponseSchema:
 ### 예외 처리
 
 ```python
-from app.common.exceptions.handler import APIException
+from app.common.exceptions import AuthenticationError
 
 def get_user(user_id: int):
     user = db.get_user(user_id)
     if not user:
-        raise APIException(status_code=404, detail="사용자를 찾을 수 없습니다")
+        raise AuthenticationError("사용자를 찾을 수 없습니다")
     return user
 ```
 
@@ -135,9 +143,18 @@ def get_user(user_id: int):
 필수 환경 변수:
 
 ```env
-DATABASE_URL=postgresql+asyncpg://user:password@localhost:5432/dbname
-REDIS_URL=redis://localhost:6379/0
-JWT_SECRET_KEY=your-secret-key
+# PostgreSQL 설정
+DATABASE_URL=postgresql://user:password@localhost:5432/dbname
+# 또는 SQLite 설정 (개발/테스트 환경)
+# DATABASE_URL=sqlite:///./dev.db
+
+# Redis 설정
+REDIS_HOST=localhost
+REDIS_PORT=6379
+REDIS_DB=0
+
+# 보안 설정
+SECRET_KEY=your-secret-key
 ```
 
 ### 테스트

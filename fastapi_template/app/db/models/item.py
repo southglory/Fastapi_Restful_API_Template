@@ -20,3 +20,6 @@ class Item(BaseModel):
     
     # 관계 설정
     owner = relationship("User", back_populates="items")
+
+    def __repr__(self) -> str:
+        return f"Item(id={self.id}, title={self.title}, owner_id={self.owner_id})"

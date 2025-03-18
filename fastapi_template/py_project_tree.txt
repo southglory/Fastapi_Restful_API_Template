@@ -1,8 +1,11 @@
+fastapi_template\.: .env.example
 fastapi_template\.: Dockerfile
 fastapi_template\.: README.md
 fastapi_template\.: docker-compose.yml
 fastapi_template\.: py_project_tree.txt
 fastapi_template\.: requirements.txt
+fastapi_template\alembic: env.py
+fastapi_template\alembic\versions: 010b6259916c_initial.py
 fastapi_template\app: __init__.py
 fastapi_template\app: main.py
 fastapi_template\app\api: __init__.py
@@ -16,6 +19,8 @@ fastapi_template\app\common\auth: __init__.py
 fastapi_template\app\common\auth: jwt.py
 fastapi_template\app\common\auth: password.py
 fastapi_template\app\common\cache: redis_client.py
+fastapi_template\app\common\config: __init__.py
+fastapi_template\app\common\config: settings.py
 fastapi_template\app\common\database: __init__.py
 fastapi_template\app\common\database: base.py
 fastapi_template\app\common\database: session.py
@@ -32,9 +37,6 @@ fastapi_template\app\common\utils: cache.py
 fastapi_template\app\common\utils: datetime.py
 fastapi_template\app\common\utils: pagination.py
 fastapi_template\app\common\validators: __init__.py
-fastapi_template\app\core: __init__.py
-fastapi_template\app\core: config.py
-fastapi_template\app\core: security.py
 fastapi_template\app\db\models: __init__.py
 fastapi_template\app\db\models: item.py
 fastapi_template\app\db\models: user.py
@@ -46,3 +48,13 @@ fastapi_template\app\services: __init__.py
 fastapi_template\app\services: item_service.py
 fastapi_template\app\services: user_service.py
 fastapi_template\app\tests: test_users.py
+fastapi_template\docs: architecture.md
+fastapi_template\docs: common_modules.md
+fastapi_template\docs: database.md
+fastapi_template\docs: development_plan.md
+fastapi_template\docs\database: 01-db-setup.md
+fastapi_template\docs\database: 02-models.md
+fastapi_template\docs\database: 03-migrations.md
+fastapi_template\docs\database: 04-schemas.md
+fastapi_template\docs\database: 05-services.md
+fastapi_template\docs\database: 06-docker.md

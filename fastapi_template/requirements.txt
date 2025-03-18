@@ -1,19 +1,26 @@
+# FastAPI 및 웹 서버
 fastapi
 uvicorn
 pydantic
+pydantic-settings
+email-validator
+
+# 데이터베이스
 sqlalchemy
-asyncpg
+alembic
 psycopg2-binary
+asyncpg
+
+# 인증 및 보안
 python-jose
 passlib
 python-multipart
-python-dotenv
-alembic
-pydantic-settings
 bcrypt
-tenacity
-pytest
-httpx
+
+# 캐싱 및 세션
 redis
-aioredis
-cryptography
+
+# 유틸리티
+python-dotenv
+httpx
+tenacity
