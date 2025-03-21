@@ -29,7 +29,7 @@ fastapi_template/README.md 대폭 간소화: 링크 중심으로 문서 정리 -
 - 문서 내 참조 링크 업데이트
 - 내부적으로 관련 주제와 내용 그룹화 및 구조화
 FastAPI 테스트 문서 구조화 완료
-[2023-03-21] validators 모듈 테스트 코드 구현
+[2023-03-21][1] validators 모듈 테스트 코드 구현
 - tests/test_validators 디렉토리 생성 및 패키지 구조 설정
 - 다음 테스트 파일 구현:
   - test_string_validators.py: 이메일, URL, 이름, 비밀번호 등 문자열 검증 함수 테스트
@@ -42,7 +42,25 @@ FastAPI 테스트 문서 구조화 완료
 - validators 모듈의 모든 함수에 대한 테스트 코드 구현: file_validators.py의 6개 함수 모두에 대한 테스트 코드 구현, magic 라이브러리 유무에 따른 조건부 테스트 처리, PIL 라이브러리 의존성 처리
 - requirements.txt 업데이트: validators 모듈에 필요한 python-magic-bin, Pillow, 라이브러리 추가
 - 테스트 코드 개선 및 오류 수정: imghdr 대신 Pillow 사용하도록 수정, pytest-asyncio 설정 추가, 문자열 및 데이터 검증 함수에 대한 추가 테스트 작성
+- common_validators.md 문서 목차를 개선하였습니다.
+  - 각 검증 카테고리(문자열, 데이터, 파일)에 "@validators" 링크 추가
+  - 각 링크는 해당 구현 코드 파일(/app/common/validators/)로 직접 이동하도록 설정
+  - 문서와 코드 간 연결성 향상으로 개발자 사용성 개선 
 - `file_validators.py` 모듈의 테스트 코드를 개선하여 100% 코드 커버리지를 달성하였습니다.
   - 실제 이미지 파일(JPG, PNG, GIF)을 생성하여 각 검증 함수를 종합적으로 테스트하는 `test_with_real_image_files` 테스트 케이스 추가
   - `validate_file_mime_type` 함수의 예외 처리 코드(111번 라인)에 대한 테스트 보완
   - 모든 검증 함수에 대해 실제 이미지 데이터를 사용한 통합 테스트로 기능 검증 강화 
+
+[2023-03-21][2] 
+common_security.md 문서를 개선하였습니다.
+- 각 보안 모듈 카테고리(암호화, CORS, 속도 제한, 보안 헤더)에 코드 링크 추가
+- 목차와 각 섹션에 "@module_name" 형식의 링크 추가
+- 각 링크는 해당 구현 코드 파일(/app/common/security/)로 직접 이동하도록 설정
+- 문서와 코드 간 연결성 향상으로 개발자 사용성 개선
+
+문서 파일 링크 형식 통일 및 개선
+- common_monitoring.md, common_middleware.md, common_exceptions.md, common_dependencies.md, common_database.md, common_config.md, common_cache.md, common_utils.md 문서의 링크 형식을 통일했습니다.
+- 목차에서 링크 제거하고 각 섹션 제목 아래에 코드 파일로의 링크 추가했습니다.
+- 모든 링크 경로를 `/fastapi_template/app/common/...` 형식으로 통일했습니다.
+- 문서 가독성과 일관성을 향상시켜 개발자가 쉽게 관련 구현 코드에 접근할 수 있도록 개선했습니다.
+- 각 문서 섹션은 이제 해당 구현 코드 파일로 직접 이동할 수 있는 링크를 포함합니다. 

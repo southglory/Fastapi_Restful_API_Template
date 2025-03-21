@@ -12,6 +12,8 @@
 
 ## 상태 모니터링
 
+[@health](/fastapi_template/app/common/monitoring/health.py)
+
 `app.common.monitoring.health` 모듈은 애플리케이션 상태 확인을 위한 엔드포인트와 유틸리티를 제공합니다.
 
 ### 상태 확인 엔드포인트
@@ -70,6 +72,8 @@ async def check_redis():
 ```
 
 ## 메트릭 수집
+
+[@metrics](/fastapi_template/app/common/monitoring/metrics.py)
 
 `app.common.monitoring.metrics` 모듈은 애플리케이션 성능 메트릭을 수집하고 제공합니다.
 
@@ -135,6 +139,8 @@ async def get_users():
 
 ## 로깅 시스템
 
+[@logging](/fastapi_template/app/common/monitoring/logging.py)
+
 `app.common.monitoring.logging` 모듈은 구조화된 로깅 시스템을 제공합니다.
 
 ### 로거 설정
@@ -182,6 +188,8 @@ except Exception as e:
 ```
 
 ## 트레이싱
+
+[@tracing](/fastapi_template/app/common/monitoring/tracing.py)
 
 `app.common.monitoring.tracing` 모듈은 분산 트레이싱 기능을 제공합니다.
 
@@ -231,6 +239,8 @@ async def get_order(order_id: int):
 ```
 
 ## 알림 시스템
+
+[@alerts](/fastapi_template/app/common/monitoring/alerts.py)
 
 `app.common.monitoring.alerts` 모듈은 중요한 이벤트에 대한 알림 기능을 제공합니다.
 

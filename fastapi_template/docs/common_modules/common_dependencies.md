@@ -17,6 +17,8 @@
 
 ## 인증 의존성
 
+[@auth](/fastapi_template/app/common/dependencies/auth.py)
+
 ### 현재 사용자 가져오기
 
 ```python
@@ -53,6 +55,8 @@ async def admin_only():
 
 ## 데이터베이스 의존성
 
+[@database](/fastapi_template/app/common/dependencies/database.py)
+
 ### 데이터베이스 세션 가져오기
 
 ```python
@@ -85,6 +89,8 @@ async def create_item(item_data: ItemCreate, db = Depends(get_transaction_sessio
 ```
 
 ## 권한 의존성
+
+[@permissions](/fastapi_template/app/common/dependencies/permissions.py)
 
 ### 리소스 소유자 확인
 
@@ -119,6 +125,8 @@ async def delete_item(
 ```
 
 ## 페이지네이션 의존성
+
+[@pagination](/fastapi_template/app/common/dependencies/pagination.py)
 
 ### 페이지네이션 파라미터
 

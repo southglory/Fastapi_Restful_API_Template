@@ -11,6 +11,8 @@
 
 ## 암호화 유틸리티
 
+[@encryption](/fastapi_template/app/common/security/encryption.py)
+
 `app.common.security.encryption` 모듈은 데이터 암호화 및 복호화를 위한 유틸리티를 제공합니다.
 
 ### 기본 암호화/복호화
@@ -58,6 +60,8 @@ original = decrypt_object(encrypted)
 
 ## CORS 설정
 
+[@cors](/fastapi_template/app/common/security/cors.py)
+
 ### 기본 CORS 설정
 
 ```python
@@ -90,6 +94,8 @@ setup_cors(
 ```
 
 ## 속도 제한
+
+[@rate_limit](/fastapi_template/app/common/security/rate_limit.py)
 
 API 요청 속도를 제한하여 서비스 남용을 방지합니다.
 
@@ -130,6 +136,8 @@ async def login(credentials: LoginCredentials):
 ```
 
 ## 보안 헤더
+
+[@headers](/fastapi_template/app/common/security/headers.py)
 
 보안 관련 HTTP 헤더를 설정하여 일반적인 웹 취약점을 방지합니다.
 
@@ -172,4 +180,4 @@ setup_security_headers(
 - **X-Content-Type-Options**: MIME 타입 스니핑 방지
 - **Strict-Transport-Security**: HTTPS 강제
 - **X-Frame-Options**: 클릭재킹 방지
-- **Referrer-Policy**: 리퍼러 정보 제한 
+- **Referrer-Policy**: 리퍼러 정보 제한

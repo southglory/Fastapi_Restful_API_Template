@@ -11,6 +11,8 @@
 
 ## 기본 설정
 
+[@settings](/fastapi_template/app/common/config/settings.py)
+
 애플리케이션 설정은 `app.common.config` 모듈을 통해 관리됩니다. 이 모듈은 환경 변수와 `.env` 파일로부터 설정값을 로드합니다.
 
 ### 설정 사용하기
@@ -64,6 +66,8 @@ REDIS_PASSWORD = None
 
 ## 환경별 설정
 
+[@environment](/fastapi_template/app/common/config/environment.py)
+
 프로젝트는 여러 환경에 맞는 설정을 제공합니다.
 
 ### 개발 환경 설정
@@ -95,6 +99,8 @@ log_level = prod_settings.LOG_LEVEL  # "INFO"
 ```
 
 ## 설정 확장
+
+[@base_settings](/fastapi_template/app/common/config/base_settings.py)
 
 ### 사용자 정의 설정 추가
 
@@ -137,6 +143,8 @@ SECRET_KEY=your-secret-key
 ```
 
 ## 설정 유효성 검사
+
+[@validators](/fastapi_template/app/common/config/validators.py)
 
 모든 설정은 Pydantic 모델을 통해 타입 검증이 이루어집니다. 잘못된 설정 값이 제공되면 애플리케이션 시작 시 오류가 발생합니다.
 
