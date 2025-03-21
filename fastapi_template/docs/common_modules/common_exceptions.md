@@ -11,6 +11,8 @@
 
 ## 사용자 정의 예외
 
+[@base](/fastapi_template/app/common/exceptions/base.py)
+
 `app.common.exceptions` 모듈은 다양한 유형의 예외를 정의합니다.
 
 ### 기본 예외 유형
@@ -67,6 +69,8 @@ raise PaymentError("신용카드가 만료되었습니다", error_code="EXPIRED_
 
 ## 전역 예외 핸들러
 
+[@handlers](/fastapi_template/app/common/exceptions/handlers.py)
+
 FastAPI 애플리케이션에 자동으로 등록되는 전역 예외 핸들러가 있습니다.
 
 ### 예외 핸들러 등록
@@ -97,6 +101,8 @@ add_exception_handlers(app)
 
 ## 예외 처리 미들웨어
 
+[@middleware](/fastapi_template/app/common/exceptions/middleware.py)
+
 애플리케이션 요청 흐름 중에 예외를 처리하기 위한 미들웨어를 제공합니다.
 
 ### 오류 로깅 미들웨어
@@ -124,6 +130,8 @@ app.add_middleware(RequestTracingMiddleware)
 ```
 
 ## 에러 코드 관리
+
+[@error_codes](/fastapi_template/app/common/exceptions/error_codes.py)
 
 표준화된 에러 코드를 사용하여 일관된 API 응답을 제공합니다.
 
@@ -182,4 +190,4 @@ message = get_localized_error_message(
     key=ErrorCode.INVALID_CREDENTIALS,
     lang="ko"
 )
-``` 
+```

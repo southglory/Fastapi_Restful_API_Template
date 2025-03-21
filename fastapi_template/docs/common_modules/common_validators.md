@@ -69,7 +69,7 @@ is_valid = validate_phone_number("1234567890", country_code="US")  # True
 
 ## 데이터 검증
 
- [@data_validators](/fastapi_template/app/common/validators/data_validators.py)
+[@data_validators](/fastapi_template/app/common/validators/data_validators.py)
 
 ### 필수 필드 검증
 
