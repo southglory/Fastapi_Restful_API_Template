@@ -4,9 +4,9 @@ FastAPI 템플릿에서 제공하는 데이터 검증 유틸리티들에 대한 
 
 ## 목차
 
-- [문자열 검증](#문자열-검증) [@validators](/fastapi_template/app/common/validators/string_validators.py)
-- [데이터 검증](#데이터-검증) [@validators](/fastapi_template/app/common/validators/data_validators.py)
-- [파일 검증](#파일-검증) [@validators](/fastapi_template/app/common/validators/file_validators.py)
+- [문자열 검증](#문자열-검증)
+- [데이터 검증](#데이터-검증)
+- [파일 검증](#파일-검증)
 
 ## 설치 및 사용
 
@@ -24,6 +24,8 @@ pip install python-magic-bin  # Windows
 ```
 
 ## 문자열 검증
+
+[@string_validators](/fastapi_template/app/common/validators/string_validators.py)
 
 ### 이메일 검증
 
@@ -67,6 +69,8 @@ is_valid = validate_phone_number("1234567890", country_code="US")  # True
 
 ## 데이터 검증
 
+ [@data_validators](/fastapi_template/app/common/validators/data_validators.py)
+
 ### 필수 필드 검증
 
 ```python
@@ -108,6 +112,8 @@ safe_query = sanitize_input("users'; DROP TABLE users;")      # "users DROP TABL
 ```
 
 ## 파일 검증
+
+[@file_validators](/fastapi_template/app/common/validators/file_validators.py)
 
 ### 파일 확장자 검증
 
