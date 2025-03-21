@@ -4,9 +4,9 @@ FastAPI 템플릿에서 제공하는 데이터 검증 유틸리티들에 대한 
 
 ## 목차
 
-- [문자열 검증](#문자열-검증)
-- [데이터 검증](#데이터-검증)
-- [파일 검증](#파일-검증)
+- [문자열 검증](#문자열-검증) [@validators](/fastapi_template/app/common/validators/string_validators.py)
+- [데이터 검증](#데이터-검증) [@validators](/fastapi_template/app/common/validators/data_validators.py)
+- [파일 검증](#파일-검증) [@validators](/fastapi_template/app/common/validators/file_validators.py)
 
 ## 설치 및 사용
 
