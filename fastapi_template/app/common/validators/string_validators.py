@@ -4,7 +4,7 @@
 """
 
 import re
-from typing import Optional
+from typing import Optional, Pattern
 
 
 def validate_email(email: str) -> bool:
@@ -84,3 +84,77 @@ def validate_phone_number(phone: str, country_code: str = "KR") -> bool:
         raise ValueError(f"지원되지 않는 국가 코드: {country_code}")
 
     return bool(re.match(pattern, phone))
+
+
+def validate_url(url: str, require_https: bool = False) -> bool:
+    """
+    URL 형식이 유효한지 검증합니다.
+
+    Args:
+        url: 검증할 URL
+        require_https: HTTPS 프로토콜을 요구할지 여부
+
+    Returns:
+        bool: 유효한 URL 형식이면 True, 아니면 False
+    """
+    if require_https:
+        pattern = r"^https://"
+        if not re.match(pattern, url):
+            return False
+
+    pattern = r"^(https?://)?([a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?(/[a-zA-Z0-9_.~!*\'();:@&=+$,/?%#\[\]-]*)?$"
+    return bool(re.match(pattern, url))
+
+
+def validate_korean_name(name: str) -> bool:
+    """
+    한국어 이름 형식이 유효한지 검증합니다.
+
+    Args:
+        name: 검증할 이름
+
+    Returns:
+        bool: 유효한 한국어 이름 형식이면 True, 아니면 False
+    """
+    pattern = r"^[가-힣]{2,5}$"
+    return bool(re.match(pattern, name))
+
+
+def validate_password(
+    password: str,
+    min_length: int = 8,
+    require_uppercase: bool = True,
+    require_lowercase: bool = True,
+    require_digit: bool = True,
+    require_special: bool = True,
+) -> bool:
+    """
+    비밀번호 강도가 요구사항을 충족하는지 검증합니다.
+
+    Args:
+        password: 검증할 비밀번호
+        min_length: 최소 길이
+        require_uppercase: 대문자 포함 요구 여부
+        require_lowercase: 소문자 포함 요구 여부
+        require_digit: 숫자 포함 요구 여부
+        require_special: 특수문자 포함 요구 여부
+
+    Returns:
+        bool: 모든 요구사항을 충족하면 True, 아니면 False
+    """
+    if len(password) < min_length:
+        return False
+
+    if require_uppercase and not re.search(r"[A-Z]", password):
+        return False
+
+    if require_lowercase and not re.search(r"[a-z]", password):
+        return False
+
+    if require_digit and not re.search(r"[0-9]", password):
+        return False
+
+    if require_special and not re.search(r'[!@#$%^&*(),.?":{}|<>]', password):
+        return False
+
+    return True

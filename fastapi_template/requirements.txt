@@ -24,7 +24,11 @@ redis
 python-dotenv
 httpx
 tenacity
-python-magic
+
+# 모듈
+## validators
+python-magic-bin
+Pillow
 
 # 개발 및 테스트 도구
 mypy
@@ -32,3 +36,4 @@ pytest
 pytest-asyncio
 types-passlib
 types-python-jose
+pytest-cov

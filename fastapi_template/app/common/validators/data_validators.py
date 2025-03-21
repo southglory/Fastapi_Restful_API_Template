@@ -5,6 +5,7 @@
 
 from typing import Any, Dict, List, Optional, Union
 import re
+from datetime import datetime
 
 
 def validate_required_fields(
@@ -32,27 +33,92 @@ def validate_required_fields(
 
 def validate_numeric_range(
     value: Union[int, float],
-    min_value: Optional[Union[int, float]] = None,
-    max_value: Optional[Union[int, float]] = None,
-) -> tuple[bool, Optional[str]]:
+    min_val: Optional[Union[int, float]] = None,
+    max_val: Optional[Union[int, float]] = None,
+) -> bool:
     """
     숫자 값이 지정된 범위 내에 있는지 검증합니다.
 
     Args:
         value: 검증할 숫자 값
-        min_value: 최소값 (None이면 하한 없음)
-        max_value: 최대값 (None이면 상한 없음)
+        min_val: 최소값 (None인 경우 최소값 검사 안함)
+        max_val: 최대값 (None인 경우 최대값 검사 안함)
 
     Returns:
-        tuple[bool, Optional[str]]: (검증 결과, 실패 시 오류 메시지)
+        bool: 범위 내에 있으면 True, 아니면 False
     """
-    if min_value is not None and value < min_value:
-        return False, f"값({value})이 최소값({min_value})보다 작습니다."
+    if min_val is not None and value < min_val:
+        return False
 
-    if max_value is not None and value > max_value:
-        return False, f"값({value})이 최대값({max_value})보다 큽니다."
+    if max_val is not None and value > max_val:
+        return False
 
-    return True, None
+    return True
+
+
+def validate_age(age: int, min_age: int = 18, max_age: int = 100) -> bool:
+    """
+    나이가 유효한 범위 내에 있는지 검증합니다.
+
+    Args:
+        age: 검증할 나이
+        min_age: 최소 나이 (기본값: 18)
+        max_age: 최대 나이 (기본값: 100)
+
+    Returns:
+        bool: 유효한 나이 범위 내에 있으면 True, 아니면 False
+    """
+    return validate_numeric_range(age, min_age, max_age)
+
+
+def validate_date(date_str: str, format_str: str = "%Y-%m-%d") -> bool:
+    """
+    날짜 문자열이 유효한 형식인지 검증합니다.
+
+    Args:
+        date_str: 검증할 날짜 문자열
+        format_str: 날짜 형식 (기본값: '%Y-%m-%d')
+
+    Returns:
+        bool: 유효한 날짜 형식이면 True, 아니면 False
+    """
+    try:
+        datetime.strptime(date_str, format_str)
+        return True
+    except ValueError:
+        return False
+
+
+def validate_future_date(date_str: str, format_str: str = "%Y-%m-%d") -> bool:
+    """
+    날짜가 현재보다 미래인지 검증합니다.
+
+    Args:
+        date_str: 검증할 날짜 문자열
+        format_str: 날짜 형식 (기본값: '%Y-%m-%d')
+
+    Returns:
+        bool: 미래 날짜이면 True, 아니면 False
+    """
+    if not validate_date(date_str, format_str):
+        return False
+
+    date = datetime.strptime(date_str, format_str)
+    return date > datetime.now()
+
+
+def validate_enum_value(value: Any, valid_values: List[Any]) -> bool:
+    """
+    값이 유효한 열거형 값 목록에 있는지 검증합니다.
+
+    Args:
+        value: 검증할 값
+        valid_values: 유효한 값 목록
+
+    Returns:
+        bool: 유효한 값 목록에 포함되어 있으면 True, 아니면 False
+    """
+    return value in valid_values
 
 
 def validate_string_length(
@@ -108,6 +174,8 @@ def sanitize_input(value: str) -> str:
         "INSERT",
         "SELECT",
         "UPDATE",
+        "FROM",
+        "WHERE",
     ]
     for char in sql_chars:
         value = value.replace(char, "")

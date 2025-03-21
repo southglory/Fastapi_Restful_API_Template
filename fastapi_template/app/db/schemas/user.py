@@ -15,11 +15,12 @@ from app.common.schemas.base_schema import (
     UpdateSchema,
     InternalSchema,
     TimeStampMixin,
+    BaseSchema,
 )
 
 
 # 사용자 공통 속성
-class UserBase:
+class UserBase(BaseSchema):
     """사용자 공통 속성"""
 
     email: EmailStr = Field(..., description="사용자 이메일")
@@ -37,11 +38,13 @@ class UserCreate(CreateSchema, UserBase):
 class UserUpdate(UpdateSchema, UserBase):
     """사용자 정보 업데이트 요청 스키마 (외부 → 시스템)"""
 
-    email: Optional[EmailStr] = Field(None, description="사용자 이메일")
-    username: Optional[str] = Field(None, description="사용자 이름")
+    email: Optional[EmailStr] = Field(None, description="사용자 이메일", exclude=True)
+    username: Optional[str] = Field(None, description="사용자 이름", exclude=True)
     password: Optional[str] = Field(None, min_length=8, description="사용자 비밀번호")
-    is_active: Optional[bool] = Field(None, description="계정 활성화 상태")
-    is_admin: Optional[bool] = Field(None, description="관리자 권한 여부")
+    is_active: Optional[bool] = Field(
+        None, description="계정 활성화 상태", exclude=True
+    )
+    is_admin: Optional[bool] = Field(None, description="관리자 권한 여부", exclude=True)
 
 
 class UserInDB(InternalSchema, UserBase, TimeStampMixin):

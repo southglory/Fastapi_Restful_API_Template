@@ -40,94 +40,28 @@ Validators 모듈을 테스트할 때 다음 접근법을 권장합니다:
 2. **경계값 분석**: 유효/무효의 경계에 있는 값들을 중점적으로 테스트합니다.
 3. **파라미터화된 테스트**: 여러 테스트 케이스를 효율적으로 작성합니다.
 
-## 테스트 예시
+## 구현된 테스트 코드
 
-### 기본 단위 테스트
+각 검증 유형별 테스트 코드를:
 
-```python
-# tests/test_validators/test_string_validators.py
-from app.common.validators.string_validators import validate_email
+### 문자열 검증 테스트
 
-def test_validate_email():
-    # 유효한 이메일 테스트
-    assert validate_email("user@example.com") == True
-    
-    # 유효하지 않은 이메일 테스트
-    assert validate_email("invalid_email") == False
-    assert validate_email("user@example") == False
-```
-
-### 파라미터화된 테스트
-
-```python
-# tests/test_validators/test_string_validators.py
-import pytest
-from app.common.validators.string_validators import validate_email
-
-@pytest.mark.parametrize("email,expected", [
-    ("user@example.com", True),
-    ("user.name@example.co.kr", True),
-    ("user+tag@example.com", True),
-    ("invalid_email", False),
-    ("missing_domain@", False),
-    ("@missing_username.com", False),
-    ("no_at_sign.com", False),
-    ("double@@at.com", False),
-])
-def test_validate_email_multiple_cases(email, expected):
-    assert validate_email(email) == expected
-```
+- [문자열 검증 테스트 코드](../../../tests/test_validators/test_string_validators.py)
 
 ### 데이터 검증 테스트
 
-```python
-# tests/test_validators/test_data_validators.py
-import pytest
-from app.common.validators.data_validators import validate_age, validate_date
-
-def test_validate_age():
-    assert validate_age(18) == True
-    assert validate_age(65) == True
-    assert validate_age(17) == False
-    assert validate_age(120) == False
-
-@pytest.mark.parametrize("date_str,format_str,expected", [
-    ("2023-01-01", "%Y-%m-%d", True),
-    ("01/01/2023", "%m/%d/%Y", True),
-    ("2023.01.01", "%Y.%m.%d", True),
-    ("invalid-date", "%Y-%m-%d", False),
-    ("2023-13-01", "%Y-%m-%d", False),
-    ("2023-01-32", "%Y-%m-%d", False),
-])
-def test_validate_date(date_str, format_str, expected):
-    assert validate_date(date_str, format_str) == expected
-```
+- [데이터 검증 테스트 코드](../../../tests/test_validators/test_data_validators.py)
 
 ### 파일 검증 테스트
 
-```python
-# tests/test_validators/test_file_validators.py
-import pytest
-import tempfile
-import os
-from app.common.validators.file_validators import validate_file_extension
-
-def test_validate_file_extension():
-    # 임시 파일 생성
-    with tempfile.NamedTemporaryFile(suffix=".txt") as temp_file:
-        # 유효한 확장자 테스트
-        assert validate_file_extension(temp_file.name, [".txt", ".pdf"]) == True
-        
-        # 유효하지 않은 확장자 테스트
-        assert validate_file_extension(temp_file.name, [".pdf", ".docx"]) == False
-```
+- [파일 검증 테스트 코드](../../../tests/test_validators/test_file_validators.py)
 
 ## 테스트 커버리지 확인
 
 Validators 모듈은 100%에 가까운 테스트 커버리지를 목표로 해야 합니다:
 
 ```bash
-pytest --cov=app.common.validators tests/test_validators/
+pytest --cov=app.common.validators tests/test_validators/ -v
 ```
 
 ## 모범 사례

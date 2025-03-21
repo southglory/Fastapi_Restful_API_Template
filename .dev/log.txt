@@ -26,4 +26,23 @@ fastapi_template/README.md 대폭 간소화: 링크 중심으로 문서 정리 -
   - 03-test_practices.md: 모범 사례 및 패턴 통합
   - 04-test_modules.md: 모듈별 가이드
   - 05-test_tools.md: 테스트 도구
-
+- 문서 내 참조 링크 업데이트
+- 내부적으로 관련 주제와 내용 그룹화 및 구조화
+FastAPI 테스트 문서 구조화 완료
+[2023-03-21] validators 모듈 테스트 코드 구현
+- tests/test_validators 디렉토리 생성 및 패키지 구조 설정
+- 다음 테스트 파일 구현:
+  - test_string_validators.py: 이메일, URL, 이름, 비밀번호 등 문자열 검증 함수 테스트
+  - test_data_validators.py: 숫자 범위, 날짜, 나이, 열거형 값 검증 함수 테스트
+  - test_file_validators.py: 파일 확장자, 크기 검증 함수 테스트
+- 테스트 코드를 04-test_modules.md 문서에 링크하여 참조 가능하도록 설정
+- test_file_validators.py 코드 오류 수정: validate_file_size 함수에 파일 크기를 직접 전달하도록 개선
+- validators.md 파일 수정: 테스트 코드 전체를 문서에 포함하는 대신 테스트 파일로의 링크로 대체함
+- validators.md 파일 수정: 테스트 코드 전체를 문서에 포함하는 대신 테스트 파일로의 링크로 대체함
+- validators 모듈의 모든 함수에 대한 테스트 코드 구현: file_validators.py의 6개 함수 모두에 대한 테스트 코드 구현, magic 라이브러리 유무에 따른 조건부 테스트 처리, PIL 라이브러리 의존성 처리
+- requirements.txt 업데이트: validators 모듈에 필요한 python-magic-bin, Pillow, 라이브러리 추가
+- 테스트 코드 개선 및 오류 수정: imghdr 대신 Pillow 사용하도록 수정, pytest-asyncio 설정 추가, 문자열 및 데이터 검증 함수에 대한 추가 테스트 작성
+- `file_validators.py` 모듈의 테스트 코드를 개선하여 100% 코드 커버리지를 달성하였습니다.
+  - 실제 이미지 파일(JPG, PNG, GIF)을 생성하여 각 검증 함수를 종합적으로 테스트하는 `test_with_real_image_files` 테스트 케이스 추가
+  - `validate_file_mime_type` 함수의 예외 처리 코드(111번 라인)에 대한 테스트 보완
+  - 모든 검증 함수에 대해 실제 이미지 데이터를 사용한 통합 테스트로 기능 검증 강화 

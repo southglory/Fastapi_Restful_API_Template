@@ -15,11 +15,12 @@ from app.common.schemas.base_schema import (
     UpdateSchema,
     InternalSchema,
     TimeStampMixin,
+    BaseSchema,
 )
 
 
 # 아이템 공통 속성
-class ItemBase:
+class ItemBase(BaseSchema):
     """아이템 공통 속성"""
 
     title: str = Field(..., min_length=1, max_length=100, description="아이템 제목")
@@ -36,7 +37,7 @@ class ItemUpdate(UpdateSchema, ItemBase):
     """아이템 정보 업데이트 요청 스키마 (외부 → 시스템)"""
 
     title: Optional[str] = Field(
-        None, min_length=1, max_length=100, description="아이템 제목"
+        None, min_length=1, max_length=100, description="아이템 제목", exclude=True
     )
 
 
