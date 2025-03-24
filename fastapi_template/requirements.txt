@@ -12,10 +12,10 @@ psycopg2-binary
 asyncpg
 
 # 인증 및 보안
-python-jose
+PyJWT
 passlib
-python-multipart
 bcrypt
+PyNaCl
 
 # 캐싱 및 세션
 redis
@@ -24,6 +24,8 @@ redis
 python-dotenv
 httpx
 tenacity
+python-multipart
+
 
 # 모듈
 ## validators
@@ -35,5 +37,4 @@ mypy
 pytest
 pytest-asyncio
 types-passlib
-types-python-jose
 pytest-cov

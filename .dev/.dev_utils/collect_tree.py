@@ -37,7 +37,7 @@ if __name__ == "__main__":
     defaultOutput: str = os.path.join(r"C:\Users\devra\StudioProjects\Fastapi_Restful_API_Template\fastapi_template", "py_project_tree.txt")
     defaultTypes: list = ["py", "md", "yml", "txt"]
     defaultNoExtFiles: list = ["Dockerfile", "requirements", "LICENSE", "Makefile", ".env.example"]
-    exclude_folders: list = ["node_modules", ".git", "venv", "_dev"]
+    exclude_folders: list = ["node_modules", ".git", "venv", "_dev", "pytest_cache"]
     
     parser = argparse.ArgumentParser(description="Generate a tree of files with top folder.")
     parser.add_argument("-p", "--path", default=defaultPath, help="The root folder to scan.")

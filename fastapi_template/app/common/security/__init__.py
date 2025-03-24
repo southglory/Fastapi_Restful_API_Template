@@ -1,18 +1,67 @@
 """
 # File: fastapi_template/app/common/security/__init__.py
-# Description: 보안 관련 모듈 패키지
+# Description: 보안 관련 모듈 (암호화, 해싱, 토큰)
 """
 
 from app.common.security.encryption import (
-    encrypt_data,
-    decrypt_data,
-    Encryption,
-    get_encryption,
+    get_encryption, 
+    encrypt_text, 
+    decrypt_text,
+    validate_key
+)
+from app.common.security.hashing import (
+    get_password_hash, 
+    verify_password, 
+    verify_hash
+)
+from app.common.security.token import (
+    generate_secure_token,
+    generate_uuid,
+    sign_data,
+    verify_signature,
+    generate_timed_token,
+    validate_token,
+    create_jwt_token,
+    decode_jwt_token,
+    create_access_token,
+    create_refresh_token
+)
+from app.common.security.file_encryption import (
+    FileEncryption,
+    encrypt_data_to_file,
+    decrypt_file_to_data,
+    encrypt_with_nacl,
+    decrypt_with_nacl
 )
 
 __all__ = [
-    "encrypt_data",
-    "decrypt_data",
-    "Encryption",
-    "get_encryption",
+    # 암호화 모듈
+    "get_encryption", 
+    "encrypt_text", 
+    "decrypt_text",
+    "validate_key",
+    
+    # 해싱 모듈
+    "get_password_hash", 
+    "verify_password", 
+    "verify_hash",
+    
+    # 토큰 모듈
+    "generate_secure_token",
+    "generate_uuid",
+    "sign_data",
+    "verify_signature",
+    "generate_timed_token",
+    "validate_token",
+    "create_jwt_token",
+    "decode_jwt_token",
+    "create_access_token",
+    "create_refresh_token",
+    
+    # 파일 암호화 모듈
+    "FileEncryption",
+    "encrypt_data_to_file",
+    "decrypt_file_to_data",
+    "encrypt_with_nacl",
+    "decrypt_with_nacl"
 ]

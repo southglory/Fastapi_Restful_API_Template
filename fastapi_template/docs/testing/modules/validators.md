@@ -1,5 +1,7 @@
 # Validators 모듈 테스트 가이드
 
+[@validators](/fastapi_template/app/common/validators)
+
 ## 개요
 
 `validators` 모듈은 다양한 입력값의 유효성을 검증하는 순수 함수들로 구성되어 있습니다. 외부 의존성이 거의 없고 입출력이 명확하여 테스트하기 가장 쉬운 모듈입니다.
@@ -46,15 +48,15 @@ Validators 모듈을 테스트할 때 다음 접근법을 권장합니다:
 
 ### 문자열 검증 테스트
 
-- [문자열 검증 테스트 코드](../../../tests/test_validators/test_string_validators.py)
+- [문자열 검증 테스트 코드](/fastapi_template/tests/test_validators/test_string_validators.py)
 
 ### 데이터 검증 테스트
 
-- [데이터 검증 테스트 코드](../../../tests/test_validators/test_data_validators.py)
+- [데이터 검증 테스트 코드](/fastapi_template/tests/test_validators/test_data_validators.py)
 
 ### 파일 검증 테스트
 
-- [파일 검증 테스트 코드](../../../tests/test_validators/test_file_validators.py)
+- [파일 검증 테스트 코드](/fastapi_template/tests/test_validators/test_file_validators.py)
 
 ## 테스트 커버리지 확인
 
