@@ -25,6 +25,7 @@ python-dotenv
 httpx
 tenacity
 python-multipart
+freezegun
 
 
 # 모듈

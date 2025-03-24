@@ -3,7 +3,7 @@
 # Description: 페이지네이션 관련 유틸리티
 """
 
-from typing import Any, Dict, Generic, List, Optional, TypeVar
+from typing import Annotated, Generic, List, TypeVar
 
 from fastapi import Query
 from pydantic import BaseModel
@@ -18,8 +18,8 @@ class PaginationParams:
 
     def __init__(
         self,
-        page: int = Query(1, ge=1, description="페이지 번호"),
-        page_size: int = Query(10, ge=1, le=100, description="페이지당 항목 수"),
+        page: Annotated[int, Query(1, ge=1, description="페이지 번호")] = 1,
+        page_size: Annotated[int, Query(10, ge=1, le=100, description="페이지당 항목 수")] = 10,
     ):
         self.page = page
         self.page_size = page_size
@@ -54,7 +54,7 @@ class PaginatedResponse(BaseModel, Generic[T]):
         """
         페이지네이션 응답 객체 생성
         """
-        total_pages = (total_items + params.page_size - 1) // params.page_size
+        total_pages = (total_items + params.page_size - 1) // params.page_size if total_items > 0 else 0
 
         page_info = PageInfo(
             page=params.page,

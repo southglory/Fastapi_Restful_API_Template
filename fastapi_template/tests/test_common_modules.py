@@ -17,7 +17,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from pydantic import BaseModel
 
 # 설정 모듈 테스트
-from app.common.config import settings, dev_settings
+from app.common.config import settings, DevSettings
 
 
 class ConfigTest:

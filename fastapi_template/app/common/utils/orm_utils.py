@@ -5,13 +5,13 @@
 # - ORM 모델 조작 도우미 함수
 """
 
-from typing import Any, TypeVar, cast
+from typing import Any, TypeVar, cast, Optional
 from sqlalchemy.sql.schema import Column
 
 T = TypeVar("T")
 
 
-def get_python_value(column_value: Any, default_value: T = 0) -> T:
+def get_python_value(column_value: Any, default_value: Optional[T] = None) -> Any:
     """
     SQLAlchemy 컬럼 값을 Python 기본 타입으로 변환
 
@@ -27,6 +27,10 @@ def get_python_value(column_value: Any, default_value: T = 0) -> T:
         user_id = get_python_value(user.id)
         ```
     """
+    if column_value is None:
+        return default_value
+    
     if isinstance(column_value, Column):
         return cast(T, column_value._annotations.get("value", default_value))
+    
     return column_value
