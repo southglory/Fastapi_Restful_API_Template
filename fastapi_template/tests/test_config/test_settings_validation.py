@@ -42,14 +42,22 @@ def test_database_url_validation(env_setup):
 
 def test_database_url_none(env_setup):
     """데이터베이스 URL이 None인 경우 테스트"""
-    if "DATABASE_URL" in os.environ:
-        del os.environ["DATABASE_URL"]
+    # Settings 객체를 직접 생성
     settings = Settings()
-    # 개발 환경에서는 DATABASE_URL이 None이면 기본값이 설정됨
-    # 현재 기본값은 postgresql URL임
+    
+    # DATABASE_URL을 명시적으로 None으로 설정
+    settings.DATABASE_URL = None
+    
+    # ENVIRONMENT를 DEVELOPMENT로 설정
+    settings.ENVIRONMENT = EnvironmentType.DEVELOPMENT
+    
+    # validate_settings_by_environment 메서드를 직접 호출
+    settings = settings.validate_settings_by_environment()
+    
+    # 개발 환경에서는 DATABASE_URL이 None일 때 SQLite 기본값으로 설정됨
     assert settings.DATABASE_URL is not None
-    assert isinstance(settings.DATABASE_URL, str)
-    assert any(prefix in settings.DATABASE_URL.lower() for prefix in ["postgresql://", "sqlite://", "mysql://"])
+    assert settings.DATABASE_URL == "sqlite:///./dev.db"
+    assert settings.DATABASE_URL.startswith("sqlite:///")
 
 
 def test_production_settings_validation(env_setup):

@@ -130,6 +130,15 @@ class Settings(BaseSettings):
     @model_validator(mode='after')
     def validate_settings_by_environment(self) -> 'Settings':
         """환경에 따른 설정 유효성 검사 및 기본값 설정"""
+        # DATABASE_URL이 None일 경우 환경별 기본값 설정
+        if self.DATABASE_URL is None:
+            if self.ENVIRONMENT == EnvironmentType.DEVELOPMENT:
+                self.DATABASE_URL = "sqlite:///./dev.db"
+                logging.info("개발 환경에서 기본 데이터베이스로 SQLite를 사용합니다: sqlite:///./dev.db")
+            elif self.ENVIRONMENT == EnvironmentType.TESTING:
+                self.DATABASE_URL = "sqlite:///./test.db"
+                logging.info("테스트 환경에서 기본 데이터베이스로 SQLite를 사용합니다: sqlite:///./test.db")
+        
         # 프로덕션 환경에서는 필수 설정 검증
         if self.ENVIRONMENT == EnvironmentType.PRODUCTION:
             required_settings = [

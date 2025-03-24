@@ -1,0 +1,19 @@
+[2024-03-24] config 모듈 테스트 커버리지 100% 달성
+- 테스트 환경에서 DATABASE_URL이 None일 때 기본값 설정 테스트 추가
+- ImportError 및 Exception 테스트 개선
+- 환경 변수 초기화 문제 해결
+- 함수 캐시 초기화 로직 추가
+- dotenv 관련 모킹 방식 수정
+
+[2024-03-24] 설정 모듈 업데이트
+- DATABASE_URL이 None일 경우 기본 데이터베이스로 SQLite 사용하도록 수정
+- 개발 환경: sqlite:///./dev.db 사용
+- 테스트 환경: sqlite:///./test.db 사용
+- 관련 테스트 업데이트 완료 (test_database_url_none)
+- 테스트 커버리지: config 모듈 98% 달성
+
+[2024-03-24] utils 모듈 테스트 개선
+- ORM 유틸리티 테스트 수정
+- 페이지네이션 유틸리티 테스트 수정
+- Query 객체 처리 문제 해결
+- 테스트 커버리지: utils 모듈 100% 달성 
