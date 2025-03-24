@@ -353,3 +353,29 @@ Pydantic v2 호환성 개선
 스키마 모듈 구조화 및 주석 복원 완료
 페이지네이션 스키마 및 유틸리티 커버리지 100% 달성
 문서 업데이트: 페이지네이션 관련 문서 수정 (common_schemas.md, common_utils.md)
+
+[2025-03-25] exceptions.md 파일 수정
+
+- 페이지네이션 특화 내용을 제거하고 일반적인 예외 처리에 관한 내용으로 변경
+- validators.md 문서 형식에 맞게 구조 개선
+  - 개요 및 테스트 용이성 섹션 추가
+  - 간결한 테스트 대상 및 접근법 설명
+  - 코드 예시 제거하고 테스트 파일 링크로 대체
+  - 모범 사례 및 주의사항 요약
+- 문서 가독성 향상을 위한 마크다운 형식 정리
+
+[2025-03-25] 예외 모듈 파일명 체계화
+
+- 예외 모듈 파일명을 명확하게 구분하기 위해 모든 파일에 'exceptions_' 접두사 추가
+  - base.py → exceptions_base.py
+  - http.py → exceptions_http.py
+  - auth.py → exceptions_auth.py
+  - database.py → exceptions_database.py
+  - validation.py → exceptions_validation.py
+  - handlers.py → exceptions_handlers.py
+- __init__.py 파일의 import 경로 수정
+- exceptions.md 문서 업데이트하여 새 파일 구조 반영
+- 테스트 파일 구조 정의 (test_exceptions_*.py)
+문서 업데이트: 예외 처리 문서에 페이지네이션 관련 예외 테스트 추가
+ exceptions 모듈 확장
+예외 모듈 파일명 체계화
