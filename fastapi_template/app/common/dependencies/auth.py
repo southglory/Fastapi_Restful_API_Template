@@ -8,8 +8,9 @@
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
-from jose import JWTError
+import jwt
 from sqlalchemy.ext.asyncio import AsyncSession
+from typing import List, Optional
 
 from app.common.auth import verify_token
 from app.common.config import settings
@@ -29,7 +30,7 @@ async def get_current_user(
         user_id = payload.get("sub")
         if not user_id:
             raise AuthenticationError("Invalid token")
-    except JWTError:
+    except jwt.PyJWTError:
         raise AuthenticationError("Invalid token")
 
     user = await UserService.get_user(db, user_id=user_id)
@@ -55,3 +56,45 @@ async def get_current_admin_user(current_user=Depends(get_current_user)):
             status_code=status.HTTP_403_FORBIDDEN, detail="Not enough privileges"
         )
     return current_user
+
+
+def has_permission(required_role: str):
+    """
+    사용자가 특정 역할이나 권한을 가지고 있는지 확인하는 의존성 함수
+    
+    사용 예시:
+    @app.get("/admin")
+    async def admin_route(user = Depends(has_permission("admin"))):
+        return {"message": "You have admin access"}
+    """
+    
+    async def permission_dependency(current_user=Depends(get_current_user)):
+        if not hasattr(current_user, "role") or current_user.role != required_role:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Permission denied"
+            )
+        return current_user
+    
+    return permission_dependency
+
+
+def has_any_permission(required_roles: List[str]):
+    """
+    사용자가 주어진 역할 목록 중 하나라도 가지고 있는지 확인하는 의존성 함수
+    
+    사용 예시:
+    @app.get("/restricted")
+    async def restricted_route(user = Depends(has_any_permission(["admin", "moderator"]))):
+        return {"message": "You have access to restricted area"}
+    """
+    
+    async def permission_dependency(current_user=Depends(get_current_user)):
+        if not hasattr(current_user, "role") or current_user.role not in required_roles:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Permission denied"
+            )
+        return current_user
+    
+    return permission_dependency

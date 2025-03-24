@@ -11,7 +11,7 @@ from app.common.config.settings import Settings
 @pytest.fixture
 def clear_env_vars():
     """테스트에 관련된 환경 변수 제거"""
-    env_vars = ["APP_NAME", "DEBUG", "API_PREFIX", "LOG_LEVEL", "SECRET_KEY", "DATABASE_URL"]
+    env_vars = ["PROJECT_NAME", "DEBUG", "API_V1_STR", "LOG_LEVEL", "SECRET_KEY", "DATABASE_URL"]
     original_values = {}
     
     # 기존 값 저장 및 제거
@@ -36,30 +36,30 @@ def test_settings_default_values(clear_env_vars):
     print(f"설정 확인: {settings}")
     
     # 타입 검증 (값 자체는 환경에 따라 다를 수 있음)
-    assert isinstance(settings.app_name, str)
-    assert isinstance(settings.debug, bool)
-    assert isinstance(settings.api_prefix, str)
-    assert isinstance(settings.log_level, str)
-    assert isinstance(settings.secret_key, str)
-    assert isinstance(settings.access_token_expire_minutes, int)
-    assert isinstance(settings.refresh_token_expire_days, int)
-    assert settings.access_token_expire_minutes == 30
-    assert settings.refresh_token_expire_days == 7
+    assert isinstance(settings.PROJECT_NAME, str)
+    assert isinstance(settings.DEBUG, bool)
+    assert isinstance(settings.API_V1_STR, str)
+    assert isinstance(settings.LOG_LEVEL, str)
+    assert isinstance(settings.SECRET_KEY, str)
+    assert isinstance(settings.ACCESS_TOKEN_EXPIRE_MINUTES, int)
+    assert isinstance(settings.REFRESH_TOKEN_EXPIRE_DAYS, int)
+    assert settings.ACCESS_TOKEN_EXPIRE_MINUTES == 30
+    assert settings.REFRESH_TOKEN_EXPIRE_DAYS == 7
 
 
 def test_settings_override_default(clear_env_vars):
     """기본값 일부만 오버라이드하는 테스트"""
     # 일부 설정만 환경 변수로 설정
-    os.environ["APP_NAME"] = "오버라이드 테스트"
+    os.environ["PROJECT_NAME"] = "오버라이드 테스트"
     os.environ["DEBUG"] = "True"
     
     settings = Settings()
     
     # 오버라이드된 값과 기본값 검증
-    assert settings.app_name == "오버라이드 테스트"  # 오버라이드됨
-    assert settings.debug is True  # 오버라이드됨
-    assert isinstance(settings.api_prefix, str)  # 값은 환경에 따라 다를 수 있음
-    assert isinstance(settings.log_level, str)  # 값은 환경에 따라 다를 수 있음
+    assert settings.PROJECT_NAME == "오버라이드 테스트"  # 오버라이드됨
+    assert settings.DEBUG is True  # 오버라이드됨
+    assert isinstance(settings.API_V1_STR, str)  # 값은 환경에 따라 다를 수 있음
+    assert isinstance(settings.LOG_LEVEL, str)  # 값은 환경에 따라 다를 수 있음
     
 
 def test_settings_boolean_conversion(clear_env_vars):
@@ -79,4 +79,4 @@ def test_settings_boolean_conversion(clear_env_vars):
     for env_value, expected_value in test_cases:
         os.environ["DEBUG"] = env_value
         settings = Settings()
-        assert settings.debug is expected_value, f"환경 변수 DEBUG={env_value}일 때 settings.debug가 {expected_value}여야 함" 
+        assert settings.DEBUG is expected_value, f"환경 변수 DEBUG={env_value}일 때 settings.DEBUG가 {expected_value}여야 함" 

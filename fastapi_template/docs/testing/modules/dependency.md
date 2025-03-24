@@ -1,8 +1,38 @@
 # Dependency 모듈 테스트 가이드
 
+[@dependencies](/fastapi_template/app/common/dependencies)
+
 ## 개요
 
 `dependency` 모듈(`app/common/dependencies`)은 FastAPI의 의존성 주입 시스템을 활용하여 요청 처리 과정에서 필요한 다양한 종속성을 제공합니다. 이 모듈은 사용자 인증, 데이터베이스 세션 관리, 권한 검증, 요청 유효성 검사 등을 처리하는 재사용 가능한 구성 요소들을 포함합니다.
+
+## 모듈 구조 및 의존성
+
+`dependencies` 모듈은 다음과 같은 하위 모듈로 구성되어 있습니다:
+
+- **[auth.py](/fastapi_template/app/common/dependencies/auth.py)**: 인증 및 권한 관련 의존성 함수
+- **[database.py](/fastapi_template/app/common/dependencies/database.py)**: 데이터베이스 세션 관련 의존성 함수
+- **[cache.py](/fastapi_template/app/common/dependencies/cache.py)**: 캐싱 관련 의존성 함수
+
+### Auth와 Dependencies 모듈 분리 및 관계
+
+1. **책임 분리**:
+   - `app/common/auth`: 순수한 인증 로직 제공 (JWT 생성/검증, 비밀번호 관리)
+   - `app/common/dependencies/auth.py`: FastAPI 의존성으로 인증 로직 통합
+
+2. **코드 구성 원칙**:
+   - `dependencies/auth.py`는 가능한 복잡한 로직을 포함하지 않고 `auth` 모듈의 함수를 호출
+   - 비즈니스 로직은 `auth` 모듈에 구현하고, `dependencies/auth.py`는 의존성 주입 인터페이스만 제공
+   - 의존성 주입 관련 로직(예: Depends 처리, 헤더 파싱)만 `dependencies/auth.py`에 포함
+
+3. **테스트 전략**:
+   - `auth` 모듈: 순수 함수 단위 테스트 접근법
+   - `dependencies/auth.py`: FastAPI 의존성 체인 중심의 통합 테스트 접근법
+   - 상호작용 테스트: 두 모듈 간의 통합 지점 테스트
+
+4. **확장성 고려**:
+   - 인증 로직이 변경되더라도 `dependencies/auth.py` 인터페이스는 그대로 유지
+   - 새로운 인증 메커니즘 추가 시 `auth` 모듈만 수정하고 `dependencies/auth.py`는 최소한의 변경
 
 > **참고**: 의존성 모듈은 이전에 `app/api/dependencies.py`에 위치했으나, 재사용성을 높이기 위해 `app/common/dependencies/` 디렉토리로 이동되었습니다. 하위 호환성을 위해 `app/api/dependencies.py`는 `app/common/dependencies` 모듈을 임포트하여 동일한 인터페이스를 제공합니다.
 

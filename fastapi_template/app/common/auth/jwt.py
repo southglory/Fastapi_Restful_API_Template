@@ -6,10 +6,10 @@
 from datetime import datetime, timedelta
 from typing import Any, Dict, Optional, Union
 
-from jose import jwt, JWTError
+import jwt
 from pydantic import ValidationError
 
-from app.common.config import settings
+from app.common.config import dev_settings as settings
 from app.common.exceptions import AuthenticationError
 from app.db.schemas.token import TokenPayload
 
@@ -21,9 +21,9 @@ def create_access_token(
     JWT 액세스 토큰 생성
     """
     if expires_delta:
-        expire = datetime.utcnow() + expires_delta
+        expire = datetime.now(datetime.UTC) + expires_delta
     else:
-        expire = datetime.utcnow() + timedelta(
+        expire = datetime.now(datetime.UTC) + timedelta(
             minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES
         )
 
@@ -46,10 +46,32 @@ def verify_token(token: str) -> Dict[str, Any]:
 
         if (
             token_data.exp is not None
-            and datetime.fromtimestamp(float(token_data.exp)) < datetime.utcnow()
+            and datetime.fromtimestamp(float(token_data.exp)) < datetime.now(datetime.UTC)
         ):
             raise ValidationError("Token expired")
 
         return payload
-    except (JWTError, ValidationError):
-        raise ValidationError("Could not validate credentials")
+    except jwt.PyJWTError:
+        raise AuthenticationError("Could not validate credentials")
+    except ValidationError:
+        raise AuthenticationError("Token validation error")
+
+
+def create_refresh_token(
+    subject: Union[str, Any], expires_delta: Optional[timedelta] = None
+) -> str:
+    """
+    JWT 리프레시 토큰 생성
+    """
+    if expires_delta:
+        expire = datetime.now(datetime.UTC) + expires_delta
+    else:
+        expire = datetime.now(datetime.UTC) + timedelta(
+            days=settings.REFRESH_TOKEN_EXPIRE_DAYS
+        )
+
+    to_encode = {"exp": expire, "sub": str(subject), "refresh": True}
+    encoded_jwt = jwt.encode(
+        to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM
+    )
+    return encoded_jwt
