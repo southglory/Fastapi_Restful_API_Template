@@ -46,15 +46,15 @@ Validators 모듈을 테스트할 때 다음 접근법을 권장합니다:
 
 ### 문자열 검증 테스트
 
-- [문자열 검증 테스트 코드](../../../tests/test_validators/test_string_validators.py)
+- [문자열 검증 테스트 코드](/fastapi_template/tests/test_validators/test_string_validators.py)
 
 ### 데이터 검증 테스트
 
-- [데이터 검증 테스트 코드](../../../tests/test_validators/test_data_validators.py)
+- [데이터 검증 테스트 코드](/fastapi_template/tests/test_validators/test_data_validators.py)
 
 ### 파일 검증 테스트
 
-- [파일 검증 테스트 코드](../../../tests/test_validators/test_file_validators.py)
+- [파일 검증 테스트 코드](/fastapi_template/tests/test_validators/test_file_validators.py)
 
 ## 테스트 커버리지 확인
 

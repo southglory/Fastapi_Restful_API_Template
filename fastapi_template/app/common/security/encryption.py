@@ -1,22 +1,20 @@
 """
 # File: fastapi_template/app/common/security/encryption.py
-# Description: 데이터 암호화/복호화 유틸리티
+# Description: 데이터 암호화/복호화 유틸리티 (표준 라이브러리 사용 버전)
 """
 
 import os
 import base64
+import hashlib
+import secrets
 from typing import Optional, Union, Any, cast, TypeVar
-
-from cryptography.fernet import Fernet
-from cryptography.hazmat.primitives import hashes
-from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 
 from app.common.config import settings
 
 
 class Encryption:
     """
-    암호화/복호화 유틸리티 클래스
+    암호화/복호화 유틸리티 클래스 (표준 라이브러리 사용 버전)
 
     다양한 방식으로 키를 생성할 수 있습니다:
     1. 직접 키를 제공 (init)
@@ -41,8 +39,8 @@ class Encryption:
         암호화/복호화 유틸리티 초기화
 
         Args:
-            key: 직접 제공하는 암호화 키 (base64 인코딩된 문자열 또는 바이트)
-            salt: PBKDF2 키 유도에 사용할 솔트
+            key: 직접 제공하는 암호화 키 (문자열 또는 바이트)
+            salt: 키 유도에 사용할 솔트
         """
         # 이미 초기화되었으면 스킵
         if getattr(self, "_initialized", False):
@@ -55,51 +53,34 @@ class Encryption:
         # 4. 랜덤 생성
         if key:
             # 직접 전달된 키 사용
-            self.key: Union[str, bytes] = key
+            self.key = self._convert_key_to_bytes(key)
         elif os.getenv("ENCRYPTION_KEY"):
             # 환경 변수에서 키 사용
             env_key = os.getenv("ENCRYPTION_KEY")
-            self.key = (
-                env_key if env_key is not None else self._derive_key_from_secret(salt)
-            )
+            if env_key:
+                self.key = self._convert_key_to_bytes(env_key)
+            else:
+                self.key = self._derive_key_from_secret(salt)
         else:
             # settings.SECRET_KEY에서 키 유도 또는 랜덤 생성
             self.key = self._derive_key_from_secret(salt)
-
-        # Fernet 암호화 객체 생성
-        try:
-            # 문자열인 경우 바이트로 변환
-            if isinstance(self.key, str):
-                key_bytes = (
-                    self.key.encode()
-                    if not self.key.startswith("b'")
-                    else eval(self.key)
-                )
-                self.fernet = Fernet(key_bytes)
-            # 바이트인 경우 직접 사용
-            elif isinstance(self.key, bytes):
-                self.fernet = Fernet(self.key)
-            # 다른 타입이거나 None인 경우 새 키 생성
-            else:
-                self.key = Fernet.generate_key()
-                self.fernet = Fernet(self.key)
-        except (TypeError, ValueError):
-            # 키 변환 시도
-            try:
-                # 키가 바이트 배열이지만 base64 인코딩이 아닌 경우
-                if isinstance(self.key, bytes):
-                    encoded_key = base64.urlsafe_b64encode(self.key)
-                    self.fernet = Fernet(encoded_key)
-                else:
-                    # 변환 불가능한 키이므로 새 키 생성
-                    self.key = Fernet.generate_key()
-                    self.fernet = Fernet(self.key)
-            except Exception:
-                # 최종적으로 새 키 생성
-                self.key = Fernet.generate_key()
-                self.fernet = Fernet(self.key)
-
+            
+        # 솔트 저장
+        self.salt = salt or b"default_salt_for_encryption"
+        
         self._initialized = True
+    
+    def _convert_key_to_bytes(self, key: Union[str, bytes]) -> bytes:
+        """키를 바이트로 변환"""
+        if isinstance(key, str):
+            # 문자열을 바이트로 변환
+            if key.startswith("b'") and key.endswith("'"):
+                try:
+                    return eval(key)  # b'...' 형식의 문자열을 바이트로 변환
+                except (SyntaxError, ValueError):
+                    pass
+            return key.encode('utf-8')
+        return key
 
     def _derive_key_from_secret(self, salt: Optional[bytes] = None) -> bytes:
         """설정의 SECRET_KEY에서 암호화 키 유도"""
@@ -115,15 +96,15 @@ class Encryption:
             salt = b"fastapi_template_salt"
 
         # PBKDF2를 사용해 키 유도
-        kdf = PBKDF2HMAC(
-            algorithm=hashes.SHA256(),
-            length=32,
-            salt=salt,
+        dk = hashlib.pbkdf2_hmac(
+            'sha256',
+            secret_key,
+            salt,
             iterations=100000,
+            dklen=32
         )
-
-        key = base64.urlsafe_b64encode(kdf.derive(secret_key))
-        return key
+        
+        return dk
 
     def encrypt(self, data: Union[str, bytes]) -> str:
         """
@@ -138,7 +119,28 @@ class Encryption:
         if isinstance(data, str):
             data = data.encode()
 
-        encrypted = self.fernet.encrypt(data)
+        # 랜덤 초기화 벡터 생성 (16바이트)
+        iv = secrets.token_bytes(16)
+        
+        # 키에서 암호화 키 유도
+        cipher_key = hashlib.pbkdf2_hmac(
+            'sha256',
+            self.key,
+            iv,
+            iterations=1000,
+            dklen=32
+        )
+        
+        # XOR 기반 암호화
+        xored = bytearray()
+        for i, byte in enumerate(data):
+            key_byte = cipher_key[i % len(cipher_key)]
+            xored.append(byte ^ key_byte)
+        
+        # IV와 암호화된 데이터 결합
+        encrypted = iv + bytes(xored)
+        
+        # Base64 인코딩
         return base64.urlsafe_b64encode(encrypted).decode()
 
     def decrypt(self, encrypted_data: str) -> str:
@@ -151,14 +153,38 @@ class Encryption:
         Returns:
             복호화된 문자열
         """
-        encrypted_bytes = base64.urlsafe_b64decode(encrypted_data.encode())
-        decrypted = self.fernet.decrypt(encrypted_bytes)
-        return decrypted.decode()
+        try:
+            # Base64 디코딩
+            encrypted_bytes = base64.urlsafe_b64decode(encrypted_data.encode())
+            
+            # IV 추출 (처음 16바이트)
+            iv = encrypted_bytes[:16]
+            ciphertext = encrypted_bytes[16:]
+            
+            # 키에서 암호화 키 유도
+            cipher_key = hashlib.pbkdf2_hmac(
+                'sha256',
+                self.key,
+                iv,
+                iterations=1000,
+                dklen=32
+            )
+            
+            # XOR 기반 복호화
+            decrypted = bytearray()
+            for i, byte in enumerate(ciphertext):
+                key_byte = cipher_key[i % len(cipher_key)]
+                decrypted.append(byte ^ key_byte)
+            
+            return bytes(decrypted).decode()
+        except Exception as e:
+            # 복호화 실패 시
+            raise ValueError(f"복호화 실패: {str(e)}")
 
     @staticmethod
     def generate_key() -> bytes:
-        """암호화에 사용할 랜덤 키 생성"""
-        return Fernet.generate_key()
+        """암호화에 사용할 랜덤 키 생성 (32바이트)"""
+        return secrets.token_bytes(32)
 
 
 # 모듈 레벨에서 사용할 수 있는 싱글톤 인스턴스
@@ -182,3 +208,48 @@ def encrypt_data(data: Union[str, bytes]) -> str:
 def decrypt_data(encrypted_data: str) -> str:
     """암호화된 문자열 데이터 복호화"""
     return get_encryption().decrypt(encrypted_data)
+
+
+# 새로운 함수 인터페이스 (이름 변경 버전)
+def encrypt_text(data: Union[str, bytes]) -> str:
+    """
+    문자열 또는 바이트 데이터 암호화 (encrypt_data의 별칭)
+    
+    Args:
+        data: 암호화할 문자열 또는 바이트
+        
+    Returns:
+        암호화된 데이터 (base64 인코딩된 문자열)
+    """
+    return encrypt_data(data)
+
+
+def decrypt_text(encrypted_data: str) -> str:
+    """
+    암호화된 문자열 데이터 복호화 (decrypt_data의 별칭)
+    
+    Args:
+        encrypted_data: 암호화된 데이터 (base64 인코딩된 문자열)
+        
+    Returns:
+        복호화된 문자열
+    """
+    return decrypt_data(encrypted_data)
+
+
+def validate_key(key: Union[str, bytes]) -> bool:
+    """
+    암호화 키의 유효성 검사
+    
+    Args:
+        key: 검사할 암호화 키 (문자열 또는 바이트)
+        
+    Returns:
+        유효한 키인지 여부
+    """
+    try:
+        # 키 변환 시도
+        key_bytes = Encryption()._convert_key_to_bytes(key)
+        return len(key_bytes) >= 16  # 최소 16바이트 이상이어야 함
+    except Exception:
+        return False
