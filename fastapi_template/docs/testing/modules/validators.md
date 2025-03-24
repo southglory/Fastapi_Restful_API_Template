@@ -1,5 +1,7 @@
 # Validators 모듈 테스트 가이드
 
+[@validators](/fastapi_template/app/common/validators)
+
 ## 개요
 
 `validators` 모듈은 다양한 입력값의 유효성을 검증하는 순수 함수들로 구성되어 있습니다. 외부 의존성이 거의 없고 입출력이 명확하여 테스트하기 가장 쉬운 모듈입니다.
