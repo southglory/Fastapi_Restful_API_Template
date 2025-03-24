@@ -4,11 +4,13 @@
 import pytest
 from typing import List
 from pydantic import BaseModel
+from unittest.mock import MagicMock
 
 from app.common.utils.pagination import (
     PaginationParams,
     PageInfo,
-    PaginatedResponse
+    PaginatedResponse,
+    apply_pagination
 )
 
 
@@ -34,6 +36,28 @@ class TestPaginationParams:
         assert params.page == 3
         assert params.page_size == 20
         assert params.skip == 40  # (3-1) * 20 = 40
+
+
+class TestApplyPagination:
+    """apply_pagination 함수 테스트"""
+    
+    def test_apply_pagination_to_query(self):
+        """쿼리 객체에 페이지네이션 적용 테스트"""
+        # 모의 쿼리 객체 생성
+        mock_query = MagicMock()
+        mock_query.offset.return_value = mock_query
+        mock_query.limit.return_value = mock_query
+        
+        # 페이지네이션 파라미터
+        params = PaginationParams(page=2, page_size=15)
+        
+        # apply_pagination 함수 호출
+        result = apply_pagination(mock_query, params)
+        
+        # 함수 호출 검증
+        mock_query.offset.assert_called_once_with(params.skip)  # offset(15)
+        mock_query.limit.assert_called_once_with(params.page_size)  # limit(15)
+        assert result == mock_query
 
 
 class TestPaginatedResponse:

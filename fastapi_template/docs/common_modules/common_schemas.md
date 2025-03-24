@@ -4,13 +4,15 @@
 
 ## 목차
 
-- [스키마 분류 체계](#스키마-분류-체계)
-- [기본 응답 스키마](#기본-응답-스키마)
-- [페이지네이션 스키마](#페이지네이션-스키마)
-- [기본 스키마 클래스](#기본-스키마-클래스)
-- [스키마 상속 및 확장](#스키마-상속-및-확장)
+- [스키마 분류 체계](#스키마-분류-체계) [@base_schema](/fastapi_template/app/common/schemas/base_schema.py)
+- [기본 응답 스키마](#기본-응답-스키마) [@base_schema](/fastapi_template/app/common/schemas/base_schema.py)
+- [페이지네이션 스키마](#페이지네이션-스키마) [@pagination](/fastapi_template/app/common/utils/pagination.py)
+- [기본 스키마 클래스](#기본-스키마-클래스) [@base_schema](/fastapi_template/app/common/schemas/base_schema.py)
+- [스키마 상속 및 확장](#스키마-상속-및-확장) [@schema_examples](/fastapi_template/app/common/schemas/schema_examples.py)
 
 ## 스키마 분류 체계
+
+[@base_schema](/fastapi_template/app/common/schemas/base_schema.py)
 
 스키마는 데이터 흐름 방향과 사용 목적에 따라 체계적으로 분류됩니다. 이를 통해 코드의 가독성과 유지보수성을 향상시킬 수 있습니다.
 
@@ -114,7 +116,11 @@ async def create_user(user_data: UserCreateSchema):
 
 자세한 예시는 `app.common.schemas.schema_examples` 모듈을 참조하세요.
 
+자세한 테스트 코드는 [여기](/fastapi_template/tests/test_schemas/)에서 확인할 수 있습니다.
+
 ## 기본 응답 스키마
+
+[@base_schema](/fastapi_template/app/common/schemas/base_schema.py)
 
 API 응답을 일관된 형식으로 표현하기 위한 `ResponseSchema` 클래스를 제공합니다.
 
@@ -174,12 +180,14 @@ async def get_user(user_id: int):
 
 ## 페이지네이션 스키마
 
+[@pagination](/fastapi_template/app/common/utils/pagination.py)
+
 페이지네이션을 지원하는 API 응답을 위한 스키마를 제공합니다.
 
 ### 페이지네이션 응답
 
 ```python
-from app.common.schemas.pagination import PaginationParams, PaginatedResponse
+from app.common.utils.pagination import PaginationParams, PaginatedResponse
 
 @app.get("/users")
 async def get_users(pagination: PaginationParams = Depends()):
@@ -231,6 +239,8 @@ GET /users?page=1&size=10
 
 ## 기본 스키마 클래스
 
+[@base_schema](/fastapi_template/app/common/schemas/base_schema.py)
+
 API 요청 및 응답에 사용되는 기본 스키마 클래스를 제공합니다.
 
 ### 기본 모델 스키마
@@ -276,6 +286,8 @@ async def create_user(user_data: UserCreate):
 ```
 
 ## 스키마 상속 및 확장
+
+[@schema_examples](/fastapi_template/app/common/schemas/schema_examples.py)
 
 기본 스키마를 상속하여 새로운 스키마를 정의할 수 있습니다.
 
@@ -323,16 +335,6 @@ class ProductResponse(ProductBase):
         orm_mode = True
 ```
 
-### 스키마 확장 유틸리티
+### 향후 확장 가능성
 
-스키마를 쉽게 확장할 수 있는 유틸리티 함수:
-
-```python
-from app.common.schemas.utils import create_response_schema, create_update_schema
-
-# 생성 스키마에서 응답 스키마 자동 생성
-ProductResponse = create_response_schema(ProductCreate, include_fields=["id", "created_at", "updated_at"])
-
-# 생성 스키마에서 업데이트 스키마 자동 생성 (모든 필드 선택 가능)
-ProductUpdate = create_update_schema(ProductCreate)
-```
+스키마 정의를 자동화하고 확장성을 높이기 위한 유틸리티 함수의 추가 개발이 계획되어 있습니다. 이를 통해 스키마 작성의 중복을 줄이고 일관성을 유지할 수 있습니다.

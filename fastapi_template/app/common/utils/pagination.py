@@ -3,66 +3,30 @@
 # Description: 페이지네이션 관련 유틸리티
 """
 
-from typing import Annotated, Generic, List, TypeVar
+from typing import List, TypeVar, Any, Dict
 
-from fastapi import Query
-from pydantic import BaseModel
+from app.common.schemas.pagination_schema import (
+    PaginationParams,
+    PageInfo,
+    PaginatedResponse,
+)
 
 T = TypeVar("T")
 
+# 페이지네이션 스키마 관련 코드는 app.common.schemas.pagination_schema 모듈로 이동됨
+# 여기서는 필요한 기능을 import하여 사용
 
-class PaginationParams:
+# 추가 유틸리티 함수가 필요한 경우 이곳에 구현
+
+def apply_pagination(query: Any, params: PaginationParams) -> Any:
     """
-    API 요청의 페이지네이션 파라미터
+    쿼리에 페이지네이션 적용
+    
+    Args:
+        query: 데이터베이스 쿼리 객체
+        params: 페이지네이션 파라미터
+        
+    Returns:
+        페이지네이션이 적용된 쿼리 객체
     """
-
-    def __init__(
-        self,
-        page: Annotated[int, Query(1, ge=1, description="페이지 번호")] = 1,
-        page_size: Annotated[int, Query(10, ge=1, le=100, description="페이지당 항목 수")] = 10,
-    ):
-        self.page = page
-        self.page_size = page_size
-        self.skip = (page - 1) * page_size
-
-
-class PageInfo(BaseModel):
-    """
-    페이지 정보 모델
-    """
-
-    page: int
-    page_size: int
-    total_items: int
-    total_pages: int
-    has_previous: bool
-    has_next: bool
-
-
-class PaginatedResponse(BaseModel, Generic[T]):
-    """
-    페이지네이션 결과 응답 모델
-    """
-
-    items: List[T]
-    page_info: PageInfo
-
-    @classmethod
-    def create(
-        cls, items: List[T], total_items: int, params: PaginationParams
-    ) -> "PaginatedResponse[T]":
-        """
-        페이지네이션 응답 객체 생성
-        """
-        total_pages = (total_items + params.page_size - 1) // params.page_size if total_items > 0 else 0
-
-        page_info = PageInfo(
-            page=params.page,
-            page_size=params.page_size,
-            total_items=total_items,
-            total_pages=total_pages,
-            has_previous=params.page > 1,
-            has_next=params.page < total_pages,
-        )
-
-        return cls(items=items, page_info=page_info)
+    return query.offset(params.skip).limit(params.page_size)
