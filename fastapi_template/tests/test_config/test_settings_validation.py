@@ -5,7 +5,7 @@
 
 import os
 import pytest
-from app.common.config.settings import Settings, ValidationError
+from app.common.config.settings import Settings, ValidationError, EnvironmentType, ProdSettings
 
 
 @pytest.fixture
@@ -22,17 +22,17 @@ def test_database_url_validation(env_setup):
     # 올바른 DB URL 설정
     os.environ["DATABASE_URL"] = "postgresql://user:password@localhost:5432/dbname"
     settings = Settings()
-    assert settings.database_url == "postgresql://user:password@localhost:5432/dbname"
+    assert settings.DATABASE_URL == "postgresql://user:password@localhost:5432/dbname"
     
     # SQLite URL 설정
     os.environ["DATABASE_URL"] = "sqlite:///./test.db"
     settings = Settings()
-    assert settings.database_url == "sqlite:///./test.db"
+    assert settings.DATABASE_URL == "sqlite:///./test.db"
     
     # MySQL URL 설정
     os.environ["DATABASE_URL"] = "mysql://user:password@localhost:3306/dbname"
     settings = Settings()
-    assert settings.database_url == "mysql://user:password@localhost:3306/dbname"
+    assert settings.DATABASE_URL == "mysql://user:password@localhost:3306/dbname"
     
     # 잘못된 DB URL 설정
     os.environ["DATABASE_URL"] = "invalid-url"
@@ -42,65 +42,66 @@ def test_database_url_validation(env_setup):
 
 def test_database_url_none(env_setup):
     """데이터베이스 URL이 None인 경우 테스트"""
-    from app.common.config.settings import Settings
+    if "DATABASE_URL" in os.environ:
+        del os.environ["DATABASE_URL"]
+    settings = Settings()
+    # 개발 환경에서는 DATABASE_URL이 None이면 기본값이 설정됨
+    # 현재 기본값은 postgresql URL임
+    assert settings.DATABASE_URL is not None
+    assert isinstance(settings.DATABASE_URL, str)
+    assert any(prefix in settings.DATABASE_URL.lower() for prefix in ["postgresql://", "sqlite://", "mysql://"])
+
+
+def test_production_settings_validation(env_setup):
+    """프로덕션 환경 설정 유효성 검사 테스트"""
+    # 환경 변수 설정 - 모든 환경 변수를 명확하게 초기화
+    os.environ["ENVIRONMENT"] = "production"
+    os.environ["SECRET_KEY"] = "개발용_시크릿_키_실제_운영에서는_변경하세요"  # 기본 시크릿 키
     
-    # 직접 메서드 호출하여 테스트
-    result = Settings.validate_database_url(None)
-    assert result is None  # None이 그대로 반환되어야 함
-
-
-def test_required_settings(env_setup):
-    """필수 설정 유효성 검사 테스트"""
-    # 필수 설정 제거 
-    if "SECRET_KEY" in os.environ:
-        del os.environ["SECRET_KEY"]
+    # DATABASE_URL 제거 (다른 테스트에서 설정한 값을 제거)
+    if "DATABASE_URL" in os.environ:
+        del os.environ["DATABASE_URL"]
+    
+    # CORS_ORIGINS 초기화
+    os.environ["CORS_ORIGINS"] = "*"
+    
+    # 기본 시크릿 키로 프로덕션 환경 설정 시도 - 실패해야 함
+    with pytest.raises(ValidationError) as exc:
+        ProdSettings()
+    
+    error_message = str(exc.value)
+    assert "프로덕션 환경에서는 안전한 SECRET_KEY가 필요합니다" in error_message
+    
+    # 안전한 시크릿 키 설정
+    os.environ["SECRET_KEY"] = "custom_test_secret_key_for_production" 
+    
+    # DATABASE_URL이 없는 경우 검증 - 실패해야 함
+    # 확실하게 DATABASE_URL 제거
     if "DATABASE_URL" in os.environ:
         del os.environ["DATABASE_URL"]
         
-    # 기본값으로 생성
-    settings = Settings()
-    
-    # 첫 번째 필수 설정 검증 - 기본 시크릿 키 사용 중인 경우
     with pytest.raises(ValidationError) as exc:
-        settings.validate_required()
+        ProdSettings()
     
-    error_msg = str(exc.value)
-    assert "SECRET_KEY is required" in error_msg
+    error_message = str(exc.value)
+    assert "프로덕션 환경에서는 DATABASE_URL이 필요합니다" in error_message
     
-    # 두 번째 테스트 - SECRET_KEY 설정 후 DATABASE_URL 검증
-    # 임의의 SECRET_KEY 설정
-    settings.secret_key = "custom_test_secret_key"  # 기본값이 아닌 값으로 설정
+    # DATABASE_URL 설정
+    os.environ["DATABASE_URL"] = "postgresql://user:password@localhost:5432/proddb"
     
-    # 다시 validate_required 호출
+    # CORS_ORIGINS가 "*"인 상태로 프로덕션 환경 설정 시도 - 실패해야 함
     with pytest.raises(ValidationError) as exc:
-        settings.validate_required()
+        ProdSettings()
     
-    # DATABASE_URL 에러 메시지 확인
-    error_msg = str(exc.value)
-    assert "DATABASE_URL is required" in error_msg 
-
-
-def test_validate_all_required(env_setup):
-    """필수 설정 검증 로직 테스트"""
-    from app.common.config.settings import Settings
+    error_message = str(exc.value)
+    assert "프로덕션 환경에서는 CORS_ORIGINS에 구체적인 출처를 지정해야 합니다" in error_message
     
-    # 테스트를 위한 Settings 객체 생성
-    settings = Settings()
+    # 올바른 CORS_ORIGINS 설정
+    os.environ["CORS_ORIGINS"] = "https://example.com,https://api.example.com"
     
-    # 두 가지 필수 필드 테스트
-    required_fields = ['secret_key', 'database_url']
-    for field in required_fields:
-        # 현재 필드 값 가져오기
-        value = getattr(settings, field, None)
-        
-        # 기본 Settings 객체에서 같은 필드 값 가져오기
-        default_value = getattr(Settings(), field)
-        
-        # validate_required 메서드의 로직을 따라 테스트
-        if not value or value == default_value:
-            # 이 조건에서는 실제 메서드가 예외를 발생시킴
-            # 여기서는 해당 라인이 실행됨을 확인하는 것이 목적이므로 pass
-            pass
-    
-    # 테스트 완료 - 코드 커버리지를 위한 것으로 실제로는 validate_required를 호출하지 않음
-    assert True 
+    # 이제 모든 설정이 올바르므로 성공해야 함
+    prod_settings = ProdSettings()
+    assert prod_settings.ENVIRONMENT == EnvironmentType.PRODUCTION
+    assert prod_settings.SECRET_KEY == "custom_test_secret_key_for_production"
+    assert prod_settings.DATABASE_URL == "postgresql://user:password@localhost:5432/proddb"
+    assert "*" not in prod_settings.CORS_ORIGINS 
