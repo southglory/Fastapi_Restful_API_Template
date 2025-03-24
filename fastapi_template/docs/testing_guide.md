@@ -39,6 +39,28 @@
 | 14 | Monitoring | 어려움 | [가이드](testing/modules/monitoring.md) |
 | 15 | API | 가장 어려움 | [가이드](testing/modules/api.md) |
 
+## 모듈 의존성 순위
+
+아래는 모듈 간 의존성을 고려한 구현 순서입니다. 가장 독립적인 모듈부터 시작하여 점차 다른 모듈에 의존하는 구성 요소로 진행하는 것이 효율적입니다.
+
+| 순위 | 모듈 | 의존성 수준 | 이유 |
+|-----|-----|-----------|------|
+| 1 | Validators | 매우 낮음 | 순수 함수로 구성되어 외부 의존성이 거의 없음 |
+| 2 | Utils | 매우 낮음 | 기본 유틸리티 함수로 독립적으로 작동 |
+| 3 | Config | 낮음 | 환경 설정 관리, 외부 의존성이 적음 |
+| 4 | Schemas | 낮음 | 데이터 모델 정의, 일부 validators에 의존 |
+| 5 | Exceptions | 낮음 | 예외 정의 및 처리, 기본 구성 요소에 의존 |
+| 6 | Security | 중간 | 기본 보안 기능, config와 일부 utils에 의존 |
+| 7 | Database | 중간 | 데이터베이스 연결 및 모델, config에 의존 |
+| 8 | Cache | 중간 | 캐싱 시스템, config와 utils에 의존 |
+| 9 | Repositories | 중간-높음 | 데이터 액세스 계층, database와 schemas에 의존 |
+| 10 | Services | 높음 | 비즈니스 로직, repositories와 여러 모듈에 의존 |
+| 11 | Auth | 높음 | 인증 및 권한 관리, security, database, config 등에 의존 |
+| 12 | Middleware | 높음 | 요청/응답 처리, 여러 모듈에 걸쳐 의존성 있음 |
+| 13 | Dependency | 높음 | 종속성 주입 시스템, 거의 모든 모듈에 의존 |
+| 14 | Monitoring | 높음 | 시스템 모니터링, 다양한 모듈에 통합 필요 |
+| 15 | API | 매우 높음 | 최종 엔드포인트, 모든 모듈 통합 필요 |
+
 ## 빠른 시작
 
 테스트를 처음 작성할 때 참고할 수 있는 간단한 예시입니다:
