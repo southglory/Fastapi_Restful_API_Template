@@ -13,6 +13,7 @@ app/common/security/
 ├── __init__.py                 # 모듈 초기화 및 내보내기
 ├── security_config.py          # 보안 설정 관리
 ├── security_encryption.py      # 암호화/복호화 기능
+├── security_file_encryption.py # 파일 암호화/복호화 기능
 ├── security_hashing.py         # 해싱 기능
 ├── security_token.py           # JWT 토큰 관리
 └── security_utils.py           # 보안 유틸리티 함수
@@ -36,20 +37,21 @@ app/common/security/
    - 암호화 키 관리
    - 암호화/복호화 정확성 검증
 
-2. **해싱 기능** (`security_hashing.py`)
+2. **파일 암호화/복호화 기능** (`security_file_encryption.py`)
+   - 파일 단위 암호화/복호화
+   - 청크 단위 처리
+   - 메모리 효율적 처리
+   - 예외 상황 처리
+
+3. **해싱 기능** (`security_hashing.py`)
    - 비밀번호 해싱
    - Salt 사용한 해싱
    - 해시 검증
 
-3. **JWT 토큰 관리** (`security_token.py`)
+4. **JWT 토큰 관리** (`security_token.py`)
    - 토큰 생성
    - 토큰 검증
    - 토큰 페이로드 관리
-
-4. **보안 유틸리티** (`security_utils.py`)
-   - 안전한 난수 생성
-   - 보안 토큰 생성
-   - 서명 생성 및 검증
 
 ## 테스트 접근법
 
@@ -67,6 +69,10 @@ Security 모듈 테스트 시 다음 접근법을 권장합니다:
 
 - [암호화/복호화 테스트 코드](/fastapi_template/tests/test_security/test_security_encryption.py)
 
+### 파일 암호화/복호화 테스트
+
+- [파일 암호화/복호화 테스트 코드](/fastapi_template/tests/test_security/test_security_file_encryption.py)
+
 ### 해싱 테스트
 
 - [해싱 테스트 코드](/fastapi_template/tests/test_security/test_security_hashing.py)
@@ -74,10 +80,6 @@ Security 모듈 테스트 시 다음 접근법을 권장합니다:
 ### JWT 토큰 테스트
 
 - [JWT 토큰 테스트 코드](/fastapi_template/tests/test_security/test_security_token.py)
-
-### 보안 유틸리티 테스트
-
-- [보안 유틸리티 테스트 코드](/fastapi_template/tests/test_security/test_security_utils.py)
 
 ## 테스트 디렉토리 구조
 
@@ -88,9 +90,9 @@ tests/
 └── test_security/
     ├── __init__.py
     ├── test_security_encryption.py
+    ├── test_security_file_encryption.py
     ├── test_security_hashing.py
-    ├── test_security_token.py
-    └── test_security_utils.py
+    └── test_security_token.py
 ```
 
 ## 테스트 커버리지 확인
