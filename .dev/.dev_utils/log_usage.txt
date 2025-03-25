@@ -1,7 +1,9 @@
 [작업 로그 스크립트 사용법 - .dev\.dev_utils\write_log.ps1]
 
 1. 로그 작성
-.dev\.dev_utils\write_log.ps1 -Title "작업 제목" -List "내용1", "내용2"
+.dev\.dev_utils\write_log.ps1 -Title "작업 제목" -Content "상세 내용"
+또는
+.dev\.dev_utils\write_log.ps1 -Title "작업 제목" -List "항목1", "항목2"
 
 2. 최근 n개 로그 조회
 .dev\.dev_utils\write_log.ps1 -Recent 3
