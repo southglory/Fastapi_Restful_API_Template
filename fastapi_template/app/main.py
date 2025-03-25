@@ -13,7 +13,7 @@ from app.api import api_router
 from app.common.database import Base, engine
 from app.common.exceptions import add_exception_handlers
 from app.common.cache.redis_client import get_redis_connection
-from app.common.config import settings
+from fastapi_template.app.common.config import config_settings
 
 # 로거 설정
 logging.basicConfig(
@@ -47,10 +47,10 @@ async def lifespan(app: FastAPI):
 
 # 애플리케이션 생성
 app = FastAPI(
-    title=settings.PROJECT_NAME,
+    title=config_settings.PROJECT_NAME,
     description="FastAPI RESTful API 템플릿",
     version="0.1.0",
-    openapi_url=f"{settings.API_V1_STR}/openapi.json",
+    openapi_url=f"{config_settings.API_V1_STR}/openapi.json",
     docs_url="/docs",
     redoc_url="/redoc",
     lifespan=lifespan,
@@ -62,14 +62,14 @@ add_exception_handlers(app)
 # CORS 미들웨어 설정
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.CORS_ORIGINS,
+    allow_origins=config_settings.CORS_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
 # API 라우터 등록
-app.include_router(api_router, prefix=settings.API_V1_STR)
+app.include_router(api_router, prefix=config_settings.API_V1_STR)
 
 
 @app.get("/")
@@ -78,7 +78,7 @@ async def root():
     루트 엔드포인트 - 애플리케이션 상태 확인
     """
     return {
-        "app_name": settings.PROJECT_NAME,
+        "app_name": config_settings.PROJECT_NAME,
         "version": "0.1.0",
         "status": "healthy",
         "docs_url": "/docs",

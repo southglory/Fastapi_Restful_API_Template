@@ -1,5 +1,5 @@
 """
-# File: app/common/config/settings.py
+# File: app/common/config/config_settings.py
 # Description: 애플리케이션 구성 설정 관리
 """
 

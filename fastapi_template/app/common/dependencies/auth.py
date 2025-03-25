@@ -13,12 +13,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from typing import List, Optional
 
 from app.common.auth import verify_token
-from app.common.config import settings
+from fastapi_template.app.common.config import config_settings
 from app.common.database import get_db
 from app.common.exceptions import AuthenticationError
 from app.services.user_service import UserService
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl=f"{settings.API_V1_STR}/auth/login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl=f"{config_settings.API_V1_STR}/auth/login")
 
 
 async def get_current_user(

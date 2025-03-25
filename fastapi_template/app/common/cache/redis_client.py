@@ -13,7 +13,7 @@ import redis.asyncio as redis_async
 from fastapi import Depends, Request
 from pydantic import BaseModel
 
-from app.common.config import settings
+from fastapi_template.app.common.config import config_settings
 
 # Redis 연결을 위한 글로벌 변수
 redis_conn = None
@@ -28,7 +28,7 @@ async def get_redis_connection() -> redis_async.Redis:
     global redis_conn
     if redis_conn is None:
         redis_url = (
-            f"redis://{settings.REDIS_HOST}:{settings.REDIS_PORT}/{settings.REDIS_DB}"
+            f"redis://{config_settings.REDIS_HOST}:{config_settings.REDIS_PORT}/{config_settings.REDIS_DB}"
         )
         redis_conn = await redis_async.from_url(
             redis_url, encoding="utf-8", decode_responses=True
@@ -41,7 +41,7 @@ class RedisCacheBackend:
     Redis 캐시 백엔드 클래스
     """
 
-    def __init__(self, redis_conn: redis_async.Redis, ttl: int = settings.REDIS_TTL):
+    def __init__(self, redis_conn: redis_async.Redis, ttl: int = config_settings.REDIS_TTL):
         self.redis = redis_conn
         self.ttl = ttl
 
@@ -106,7 +106,7 @@ def cached(
         async def wrapper(*args, **kwargs):
             # Redis 연결 가져오기
             redis_conn = await get_redis_connection()
-            cache = RedisCacheBackend(redis_conn, ttl=ttl or settings.REDIS_TTL)
+            cache = RedisCacheBackend(redis_conn, ttl=ttl or config_settings.REDIS_TTL)
 
             # 캐시 키 생성
             cache_key = key_builder(prefix, *args, **kwargs)

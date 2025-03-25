@@ -9,7 +9,7 @@ import tempfile
 import sys
 from unittest import mock
 
-from app.common.config.settings import load_config_from_file
+from fastapi_template.app.common.config.config_settings import load_config_from_file
 
 
 @pytest.fixture

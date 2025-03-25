@@ -7,7 +7,7 @@ import os
 import pytest
 import logging
 from unittest import mock
-from app.common.config.settings import (
+from fastapi_template.app.common.config.config_settings import (
     Settings, DevSettings, ProdSettings, TstSettings,
     EnvironmentType, ValidationError, load_config_from_file, get_settings
 )

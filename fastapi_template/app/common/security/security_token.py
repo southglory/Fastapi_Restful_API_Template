@@ -13,7 +13,7 @@ import jwt
 from typing import Dict, Union, Optional, Tuple, Any
 from datetime import datetime, timedelta, UTC
 
-from app.common.config import settings
+from fastapi_template.app.common.config import config_settings
 
 
 def generate_secure_token(length: int = 32) -> str:
@@ -59,7 +59,7 @@ def sign_data(data: str, secret: Optional[str] = None) -> str:
         서명된 데이터 (데이터.서명 형식)
     """
     if secret is None:
-        secret = settings.SECRET_KEY
+        secret = config_settings.SECRET_KEY
         
     # 데이터에 HMAC-SHA256 서명 생성
     signature = hmac.new(
@@ -194,13 +194,13 @@ def create_jwt_token(
     if expires_delta:
         expire = datetime.now(UTC) + expires_delta
     else:
-        expire = datetime.now(UTC) + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+        expire = datetime.now(UTC) + timedelta(minutes=config_settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     
     to_encode.update({"exp": expire})
     
     # 비밀키 설정
     if secret_key is None:
-        secret_key = settings.SECRET_KEY
+        secret_key = config_settings.SECRET_KEY
     
     # JWT 토큰 생성
     encoded_jwt = jwt.encode(
@@ -234,7 +234,7 @@ def decode_jwt_token(
     """
     # 비밀키 설정
     if secret_key is None:
-        secret_key = settings.SECRET_KEY
+        secret_key = config_settings.SECRET_KEY
     
     # JWT 토큰 디코딩
     return jwt.decode(
@@ -265,7 +265,7 @@ def create_access_token(
     """
     # 기본 만료 시간이 설정되지 않은 경우 기본값 사용
     if expires_delta is None:
-        expires_delta = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+        expires_delta = timedelta(minutes=config_settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     
     # 기본 클레임 설정
     to_encode = {
@@ -300,7 +300,7 @@ def create_refresh_token(
     """
     # 기본 만료 시간이 설정되지 않은 경우 기본값 사용
     if expires_delta is None:
-        expires_delta = timedelta(days=settings.REFRESH_TOKEN_EXPIRE_DAYS)
+        expires_delta = timedelta(days=config_settings.REFRESH_TOKEN_EXPIRE_DAYS)
     
     # 기본 클레임 설정
     to_encode = {

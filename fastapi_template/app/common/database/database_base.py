@@ -1,5 +1,5 @@
 """
-# File: fastapi_template/app/common/database/base.py
+# File: fastapi_template/app/common/database/database_base.py
 # Description: SQLAlchemy 기본 설정 및 공통 모델
 """
 

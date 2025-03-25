@@ -1,5 +1,5 @@
 """
-# File: fastapi_template/app/common/database/session.py
+# File: fastapi_template/app/common/database/database_session.py
 # Description: 데이터베이스 세션 관리
 """
 
@@ -8,11 +8,11 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
 from sqlalchemy.orm import sessionmaker
 
-from app.common.config import settings
+from fastapi_template.app.common.config import config_settings
 
 # 비동기 데이터베이스 URL 처리
 # SQLite와 PostgreSQL 모두 지원
-ASYNC_SQLALCHEMY_DATABASE_URL = settings.DATABASE_URL
+ASYNC_SQLALCHEMY_DATABASE_URL = config_settings.DATABASE_URL
 if ASYNC_SQLALCHEMY_DATABASE_URL.startswith("postgresql://"):
     ASYNC_SQLALCHEMY_DATABASE_URL = ASYNC_SQLALCHEMY_DATABASE_URL.replace(
         "postgresql://", "postgresql+asyncpg://"
@@ -25,7 +25,7 @@ elif ASYNC_SQLALCHEMY_DATABASE_URL.startswith("sqlite:///"):
 
 # 비동기 엔진 생성
 async_engine = create_async_engine(
-    ASYNC_SQLALCHEMY_DATABASE_URL, pool_pre_ping=True, echo=settings.DB_ECHO_LOG
+    ASYNC_SQLALCHEMY_DATABASE_URL, pool_pre_ping=True, echo=config_settings.DB_ECHO_LOG
 )
 
 # 비동기 세션 팩토리
@@ -38,7 +38,7 @@ AsyncSessionLocal = async_sessionmaker(
 )
 
 # 동기 엔진 (마이그레이션 등의 용도)
-engine = create_engine(settings.DATABASE_URL, pool_pre_ping=True)
+engine = create_engine(config_settings.DATABASE_URL, pool_pre_ping=True)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 

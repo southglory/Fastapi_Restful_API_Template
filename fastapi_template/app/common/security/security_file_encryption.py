@@ -14,7 +14,7 @@ import nacl.secret
 import nacl.utils
 from nacl.exceptions import CryptoError
 
-from app.common.config import settings
+from fastapi_template.app.common.config import config_settings
 
 
 class FileEncryption:
