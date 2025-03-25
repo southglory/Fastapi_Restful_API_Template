@@ -381,3 +381,9 @@ Pydantic v2 호환성 개선
 예외 모듈 파일명 체계화 2024-02-14: exceptions 모듈 테스트 코드 작성 완료 - test_exceptions_base.py, test_exceptions_http.py, test_exceptions_auth.py, test_exceptions_database.py, test_exceptions_validation.py, test_exceptions_handlers.py 파일 생성
 2024-02-14: exceptions 모듈의 중복 파일 삭제 - auth.py, base.py, database.py, handlers.py, http.py, validation.py 파일 삭제
 ----------- committed -----------
+2025-03-25 (10:47) exceptions 모듈 테스트 코드 작성 및 수정
+- exceptions 모듈의 각 컴포넌트별 테스트 코드 작성
+- 중복된 파일명 정리 (exceptions_ 접두사로 통일)
+- 예외 메시지 일관성 확보
+- 35개 테스트 케이스 모두 통과
+----------- committed -----------

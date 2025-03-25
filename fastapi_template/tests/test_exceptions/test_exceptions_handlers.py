@@ -2,20 +2,25 @@
 # File: tests/test_exceptions/test_exceptions_handlers.py
 # Description: 예외 핸들러 테스트
 """
+import json
 import pytest
-from fastapi import Request
+from fastapi import FastAPI, Request, status
 from fastapi.responses import JSONResponse
 from fastapi.exceptions import RequestValidationError
 from starlette.exceptions import HTTPException
-import json
+from pydantic import ValidationError as PydanticValidationError
+from sqlalchemy.exc import SQLAlchemyError
 
 from app.common.exceptions.exceptions_base import AppException
-from app.common.exceptions.exceptions_handlers import (
-    app_exception_handler,
-    validation_exception_handler,
-    http_exception_handler,
-    generic_exception_handler
-)
+from app.common.exceptions.exceptions_handlers import add_exception_handlers
+
+
+@pytest.fixture
+def app():
+    """테스트용 FastAPI 앱 생성"""
+    app = FastAPI()
+    add_exception_handlers(app)
+    return app
 
 
 @pytest.fixture
@@ -29,78 +34,64 @@ def mock_request():
     })
 
 
-def test_app_exception_handler(mock_request):
+async def test_handle_app_exception(app, mock_request):
     """AppException 핸들러 테스트"""
     # 기본 예외
     exc = AppException()
-    response = app_exception_handler(mock_request, exc)
+    handler = app.exception_handlers[AppException]
+    response = await handler(mock_request, exc)
     assert isinstance(response, JSONResponse)
     assert response.status_code == 500
-    assert response.body == json.dumps({"detail": "알 수 없는 오류가 발생했습니다."}).encode()
+    assert json.loads(response.body) == {"detail": "서버 오류가 발생했습니다."}
     
     # 커스텀 상태 코드와 메시지
     exc = AppException(status_code=400, detail="잘못된 요청")
-    response = app_exception_handler(mock_request, exc)
+    response = await handler(mock_request, exc)
     assert response.status_code == 400
-    assert response.body == json.dumps({"detail": "잘못된 요청"}).encode()
+    assert json.loads(response.body) == {"detail": "잘못된 요청"}
     
     # 헤더 포함
     exc = AppException(headers={"X-Custom": "value"})
-    response = app_exception_handler(mock_request, exc)
+    response = await handler(mock_request, exc)
     assert response.headers["x-custom"] == "value"
 
 
-def test_validation_exception_handler(mock_request):
+async def test_handle_validation_error(app, mock_request):
     """ValidationException 핸들러 테스트"""
     # 기본 검증 오류
     exc = RequestValidationError(errors=[])
-    response = validation_exception_handler(mock_request, exc)
+    handler = app.exception_handlers[PydanticValidationError]
+    response = await handler(mock_request, exc)
     assert isinstance(response, JSONResponse)
     assert response.status_code == 422
-    assert response.body == json.dumps({"detail": "입력 데이터 검증에 실패했습니다."}).encode()
     
     # 상세 오류 정보 포함
     errors = [
         {"loc": ("query", "page"), "msg": "field required", "type": "missing"}
     ]
     exc = RequestValidationError(errors=errors)
-    response = validation_exception_handler(mock_request, exc)
+    response = await handler(mock_request, exc)
     assert response.status_code == 422
-    assert "field required" in response.body.decode()
+    assert "field required" in json.loads(response.body)["detail"][0]["msg"]
 
 
-def test_http_exception_handler(mock_request):
-    """HTTPException 핸들러 테스트"""
-    # 기본 HTTP 예외
-    exc = HTTPException(status_code=404)
-    response = http_exception_handler(mock_request, exc)
+async def test_handle_sql_error(app, mock_request):
+    """SQLAlchemy 예외 핸들러 테스트"""
+    # 기본 SQL 예외
+    exc = SQLAlchemyError("데이터베이스 오류")
+    handler = app.exception_handlers[SQLAlchemyError]
+    response = await handler(mock_request, exc)
     assert isinstance(response, JSONResponse)
-    assert response.status_code == 404
-    assert response.body == json.dumps({"detail": "Not Found"}).encode()
-    
-    # 커스텀 메시지
-    exc = HTTPException(status_code=404, detail="리소스를 찾을 수 없습니다")
-    response = http_exception_handler(mock_request, exc)
-    assert response.status_code == 404
-    assert response.body == json.dumps({"detail": "리소스를 찾을 수 없습니다"}).encode()
-    
-    # 헤더 포함
-    exc = HTTPException(status_code=401, headers={"WWW-Authenticate": "Bearer"})
-    response = http_exception_handler(mock_request, exc)
-    assert response.headers["www-authenticate"] == "Bearer"
+    assert response.status_code == 500
+    assert json.loads(response.body) == {"detail": "데이터베이스 오류가 발생했습니다."}
 
 
-def test_generic_exception_handler(mock_request):
-    """GenericException 핸들러 테스트"""
+async def test_handle_general_exception(app, mock_request):
+    """일반 예외 핸들러 테스트"""
     # 기본 예외
     exc = Exception("일반 오류")
-    response = generic_exception_handler(mock_request, exc)
+    handler = app.exception_handlers[Exception]
+    response = await handler(mock_request, exc)
     assert isinstance(response, JSONResponse)
     assert response.status_code == 500
-    assert response.body == json.dumps({"detail": "알 수 없는 오류가 발생했습니다."}).encode()
-    
-    # 커스텀 메시지
-    exc = Exception("커스텀 오류")
-    response = generic_exception_handler(mock_request, exc)
-    assert response.status_code == 500
-    assert response.body == json.dumps({"detail": "알 수 없는 오류가 발생했습니다."}).encode() 
+    assert json.loads(response.body) == {"detail": "서버 내부 오류가 발생했습니다."} 

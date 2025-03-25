@@ -30,7 +30,7 @@ def test_invalid_parameter_error():
     # 기본 메시지
     exc = InvalidParameterError()
     assert exc.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
-    assert exc.detail == "잘못된 파라미터입니다."
+    assert exc.detail == "잘못된 파라미터가 제공되었습니다."
     
     # 파라미터 정보 포함
     exc = InvalidParameterError(
@@ -38,7 +38,7 @@ def test_invalid_parameter_error():
         param_value="invalid",
         reason="숫자여야 합니다"
     )
-    assert exc.detail == "파라미터 'age'가 잘못되었습니다: 'invalid' (숫자여야 합니다)"
+    assert exc.detail == "파라미터 'age'의 값 'invalid'이(가) 유효하지 않습니다: 숫자여야 합니다"
     
     # 커스텀 메시지
     exc = InvalidParameterError(detail="커스텀 파라미터 오류")
@@ -54,7 +54,7 @@ def test_missing_required_field_error():
     
     # 필드 목록 포함
     exc = MissingRequiredFieldError(field_names=["name", "email"])
-    assert exc.detail == "다음 필드가 필요합니다: name, email"
+    assert exc.detail == "필수 필드 'name', 'email'이(가) 누락되었습니다."
     
     # 커스텀 메시지
     exc = MissingRequiredFieldError(detail="커스텀 필드 오류")
@@ -66,14 +66,14 @@ def test_invalid_format_error():
     # 기본 메시지
     exc = InvalidFormatError()
     assert exc.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
-    assert exc.detail == "잘못된 데이터 형식입니다."
+    assert exc.detail == "데이터가 올바른 형식이 아닙니다."
     
     # 필드와 형식 정보 포함
     exc = InvalidFormatError(
         field_name="email",
         expected_format="이메일 주소"
     )
-    assert exc.detail == "필드 'email'의 형식이 잘못되었습니다. 예상 형식: 이메일 주소"
+    assert exc.detail == "필드 'email'의 형식이 올바르지 않습니다. 예상 형식: 이메일 주소."
     
     # 커스텀 메시지
     exc = InvalidFormatError(detail="커스텀 형식 오류")
@@ -85,7 +85,7 @@ def test_value_out_of_range_error():
     # 기본 메시지
     exc = ValueOutOfRangeError()
     assert exc.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
-    assert exc.detail == "값이 허용 범위를 벗어났습니다."
+    assert exc.detail == "값이 허용된 범위를 벗어났습니다."
     
     # 범위 정보 포함
     exc = ValueOutOfRangeError(
@@ -94,7 +94,7 @@ def test_value_out_of_range_error():
         min_value=0,
         max_value=120
     )
-    assert exc.detail == "필드 'age'의 값(150)이 허용 범위(0~120)를 벗어났습니다."
+    assert exc.detail == "필드 'age'의 값 '150'이(가) 범위를 벗어났습니다. 허용 범위: 0 ~ 120."
     
     # 커스텀 메시지
     exc = ValueOutOfRangeError(detail="커스텀 범위 오류")

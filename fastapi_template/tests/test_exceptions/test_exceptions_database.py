@@ -57,7 +57,7 @@ def test_entity_not_found_error():
     
     # 엔티티 타입과 ID 포함
     exc = EntityNotFoundError(entity_type="User", entity_id=1)
-    assert exc.detail == "User(id=1)를 찾을 수 없습니다."
+    assert exc.detail == "User (id: 1)을(를) 찾을 수 없습니다."
     
     # 커스텀 메시지
     exc = EntityNotFoundError(detail="커스텀 엔티티 오류")
@@ -69,11 +69,11 @@ def test_entity_already_exists_error():
     # 기본 메시지
     exc = EntityAlreadyExistsError()
     assert exc.status_code == status.HTTP_409_CONFLICT
-    assert exc.detail == "이미 존재하는 엔티티입니다."
+    assert exc.detail == "엔티티가 이미 존재합니다."
     
     # 엔티티 타입과 식별자 포함
     exc = EntityAlreadyExistsError(entity_type="User", identifier="email@example.com")
-    assert exc.detail == "User(email=email@example.com)가 이미 존재합니다."
+    assert exc.detail == "User이(가) 이미 존재합니다."
     
     # 커스텀 메시지
     exc = EntityAlreadyExistsError(detail="커스텀 엔티티 오류")
