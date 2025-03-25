@@ -40,56 +40,17 @@ function Show-RecentLogs($count) {
     }
 }
 
-# 🔹 커밋 마크 모드
+# 🔹 커밋 마크 모드 (단순히 마지막에 추가)
 if ($MarkCommitted) {
     if (Test-Path $logPath) {
-        $lines = Get-Content $logPath
-        $lastLogStart = -1
-
-        # 1. 마지막 로그 블럭 시작 위치 찾기
-        for ($i = $lines.Count - 1; $i -ge 0; $i--) {
-            if ($lines[$i] -match '^\d{4}-\d{2}-\d{2} \(\d{2}:\d{2}\)') {
-                $lastLogStart = $i
-                break
-            }
-        }
-
-        if ($lastLogStart -eq -1) {
-            Write-Output "❌ 로그 블럭을 찾을 수 없습니다."
-            exit 1
-        }
-
-        # 2. 해당 블럭 안에 이미 committed 라인이 있는지 검사
-        for ($i = $lastLogStart; $i -lt $lines.Count; $i++) {
-            if ($lines[$i] -eq '----------- committed -----------') {
-                Write-Output "✅ 이미 커밋됨 표시가 있습니다."
-                exit 0
-            }
-            if ($lines[$i] -match '^\d{4}-\d{2}-\d{2} \(\d{2}:\d{2}\)' -and $i -ne $lastLogStart) {
-                break  # 다음 로그 시작되면 종료
-            }
-        }
-
-        # 3. 커밋 마크를 블럭 끝에 삽입
-        $insertIndex = $lines.Count
-        for ($i = $lastLogStart + 1; $i -lt $lines.Count; $i++) {
-            if ($lines[$i] -match '^\d{4}-\d{2}-\d{2} \(\d{2}:\d{2}\)') {
-                $insertIndex = $i
-                break
-            }
-        }
-
-        $before = $lines[0..($insertIndex - 1)]
-        $after = if ($insertIndex -lt $lines.Count) { $lines[$insertIndex..($lines.Count - 1)] } else { @() }
-
-        $newLines = $before + '----------- committed -----------' + $after
-        Set-Content -Path $logPath -Value $newLines
-        Write-Output "✅ 커밋 표시 추가 완료."
+        Add-Content -Path $logPath -Value '----------- committed -----------'
+        Write-Output "✅ 마지막에 커밋 마크를 추가했습니다."
     } else {
         Write-Output "⚠️ 로그 파일이 존재하지 않습니다."
     }
     exit 0
-} elseif ($PSBoundParameters.ContainsKey("ShowUncommitted")) {
+}
+ elseif ($PSBoundParameters.ContainsKey("ShowUncommitted")) {
     if (-not (Test-Path $logPath)) {
         Write-Output "⚠️ 로그 파일이 존재하지 않습니다."
         exit 0
@@ -134,8 +95,6 @@ if ($MarkCommitted) {
 
     exit 0
 }
-
-
 
 
 # 🔹 최근 로그 조회 모드
