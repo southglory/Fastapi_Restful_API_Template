@@ -1,14 +1,29 @@
 # Security 모듈 테스트 가이드
 
+[@security](/fastapi_template/app/common/security)
+
 ## 개요
 
 `security` 모듈은 애플리케이션의 보안 관련 기능을 담당합니다. 주로 암호화, 해싱, 키 관리 등의 기능을 제공하며, 다른 보안 관련 모듈(예: auth)의 기반이 됩니다.
 
+## 현재 모듈 구조
+
+```
+app/common/security/
+├── __init__.py                 # 모듈 초기화 및 내보내기
+├── security_config.py          # 보안 설정 관리
+├── security_encryption.py      # 암호화/복호화 기능
+├── security_hashing.py         # 해싱 기능
+├── security_token.py           # JWT 토큰 관리
+└── security_utils.py           # 보안 유틸리티 함수
+```
+
 ## 테스트 용이성
 
-- **난이도**: 쉬움-중간
+- **난이도**: 중간
 - **이유**:
-  - 대부분 순수 함수이나 일부 외부 라이브러리에 의존
+  - 기본 보안 기능 구현이 필요
+  - config와 일부 utils에 의존
   - 암호화/복호화 기능은 결정적이며 테스트하기 쉬움
   - 키 생성 등 일부 기능은 랜덤성을 포함해 테스트가 복잡할 수 있음
 
@@ -16,17 +31,22 @@
 
 주요 테스트 대상은 다음과 같습니다:
 
-1. **암호화/복호화 기능**
-   - 대칭 암호화 (AES 등)
-   - 비대칭 암호화 (RSA 등)
+1. **암호화/복호화 기능** (`security_encryption.py`)
+   - 대칭 암호화 (AES)
    - 암호화 키 관리
+   - 암호화/복호화 정확성 검증
 
-2. **해싱 기능**
-   - 단방향 해시 함수
+2. **해싱 기능** (`security_hashing.py`)
+   - 비밀번호 해싱
    - Salt 사용한 해싱
    - 해시 검증
 
-3. **보안 유틸리티**
+3. **JWT 토큰 관리** (`security_token.py`)
+   - 토큰 생성
+   - 토큰 검증
+   - 토큰 페이로드 관리
+
+4. **보안 유틸리티** (`security_utils.py`)
    - 안전한 난수 생성
    - 보안 토큰 생성
    - 서명 생성 및 검증
@@ -45,15 +65,33 @@ Security 모듈 테스트 시 다음 접근법을 권장합니다:
 
 ### 암호화/복호화 테스트
 
-- [암호화/복호화 테스트 코드](/fastapi_template/tests/test_security/test_encryption.py)
+- [암호화/복호화 테스트 코드](/fastapi_template/tests/test_security/test_security_encryption.py)
 
 ### 해싱 테스트
 
-- [해싱 테스트 코드](/fastapi_template/tests/test_security/test_hashing.py)
+- [해싱 테스트 코드](/fastapi_template/tests/test_security/test_security_hashing.py)
 
-### 보안 토큰 테스트
+### JWT 토큰 테스트
 
-- [보안 토큰 테스트 코드](/fastapi_template/tests/test_security/test_token.py)
+- [JWT 토큰 테스트 코드](/fastapi_template/tests/test_security/test_security_token.py)
+
+### 보안 유틸리티 테스트
+
+- [보안 유틸리티 테스트 코드](/fastapi_template/tests/test_security/test_security_utils.py)
+
+## 테스트 디렉토리 구조
+
+테스트 파일은 다음과 같은 구조로 구성합니다:
+
+```
+tests/
+└── test_security/
+    ├── __init__.py
+    ├── test_security_encryption.py
+    ├── test_security_hashing.py
+    ├── test_security_token.py
+    └── test_security_utils.py
+```
 
 ## 테스트 커버리지 확인
 

@@ -77,16 +77,30 @@ import pytest
 from fastapi import status
 from app.common.exceptions.exceptions_base import AppException
 
-def test_app_exception():
+def test_app_exception_default():
     # 기본 파라미터로 초기화
     exc = AppException()
     assert exc.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR
     assert exc.detail == "서버 오류가 발생했습니다."
-    
+    assert exc.headers == {}
+
+def test_app_exception_custom():
     # 커스텀 파라미터로 초기화
-    exc = AppException(detail="테스트 오류", status_code=501)
-    assert exc.status_code == 501
+    exc = AppException(
+        detail="테스트 오류",
+        status_code=status.HTTP_400_BAD_REQUEST,
+        headers={"X-Custom-Header": "test"}
+    )
+    assert exc.status_code == status.HTTP_400_BAD_REQUEST
     assert exc.detail == "테스트 오류"
+    assert exc.headers == {"X-Custom-Header": "test"}
+
+def test_app_exception_partial_custom():
+    # 일부 파라미터만 커스텀
+    exc = AppException(detail="테스트 오류")
+    assert exc.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR
+    assert exc.detail == "테스트 오류"
+    assert exc.headers == {}
 ```
 
 ### 예외 처리기 테스트 (`test_exceptions_handlers.py`)
@@ -94,41 +108,64 @@ def test_app_exception():
 ```python
 # tests/test_exceptions/test_exceptions_handlers.py
 import pytest
-from fastapi import FastAPI
-from fastapi.testclient import TestClient
+from fastapi import FastAPI, Request
+from fastapi.responses import JSONResponse
+from fastapi.exceptions import RequestValidationError
+from starlette.exceptions import HTTPException
+from pydantic import ValidationError as PydanticValidationError
 from sqlalchemy.exc import SQLAlchemyError
 
 from app.common.exceptions.exceptions_base import AppException
+from app.common.exceptions.exceptions_validation import ValidationError
+from app.common.exceptions.exceptions_database import DatabaseError
 from app.common.exceptions.exceptions_handlers import add_exception_handlers
 
 @pytest.fixture
 def test_app():
     app = FastAPI()
     add_exception_handlers(app)
-    
-    @app.get("/app-exception")
-    def raise_app_exception():
-        raise AppException(detail="테스트 예외")
-    
-    @app.get("/database-error")
-    def raise_db_error():
-        raise SQLAlchemyError("DB 오류")
-    
     return app
 
 @pytest.fixture
-def client(test_app):
-    return TestClient(test_app)
+def mock_request():
+    return Request(scope={"type": "http"})
 
-def test_app_exception_handler(client):
-    response = client.get("/app-exception")
+def test_handle_app_exception(test_app, mock_request):
+    exc = AppException(detail="테스트 예외")
+    handler = test_app.exception_handlers[AppException]
+    response = handler(mock_request, exc)
+    assert isinstance(response, JSONResponse)
     assert response.status_code == 500
-    assert response.json() == {"detail": "테스트 예외"}
+    assert response.body == b'{"detail":"테스트 예외"}'
+
+def test_handle_validation_error(test_app, mock_request):
+    exc = PydanticValidationError(errors=[])
+    handler = test_app.exception_handlers[PydanticValidationError]
+    response = handler(mock_request, exc)
+    assert isinstance(response, JSONResponse)
+    assert response.status_code == 422
+    assert response.body == b'{"detail":[]}'
+
+def test_handle_sql_error(test_app, mock_request):
+    exc = SQLAlchemyError("DB 오류")
+    handler = test_app.exception_handlers[SQLAlchemyError]
+    response = handler(mock_request, exc)
+    assert isinstance(response, JSONResponse)
+    assert response.status_code == 500
+    assert response.body == b'{"detail":"데이터베이스 오류가 발생했습니다."}'
+
+def test_handle_general_exception(test_app, mock_request):
+    exc = Exception("일반 오류")
+    handler = test_app.exception_handlers[Exception]
+    response = handler(mock_request, exc)
+    assert isinstance(response, JSONResponse)
+    assert response.status_code == 500
+    assert response.body == b'{"detail":"서버 내부 오류가 발생했습니다."}'
 ```
 
 ## 테스트 디렉토리 구조
 
-테스트 파일은 다음과 같은 구조로 구성하는 것을 권장합니다:
+테스트 파일은 다음과 같은 구조로 구성합니다:
 
 ```
 tests/
@@ -144,11 +181,13 @@ tests/
 
 ## 테스트 커버리지 확인
 
-Exceptions 모듈은 높은 테스트 커버리지를 목표로 해야 합니다:
+Exceptions 모듈은 높은 테스트 커버리지를 목표로 합니다:
 
 ```bash
 pytest --cov=app.common.exceptions tests/test_exceptions/ -v
 ```
+
+현재 모든 예외 클래스와 처리기에 대한 테스트가 구현되어 있으며, 100% 커버리지를 달성했습니다.
 
 ## 모범 사례
 

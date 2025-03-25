@@ -1,0 +1,13 @@
+[작업 로그 스크립트 사용법 - .dev\.dev_utils\write_log.ps1]
+
+1. 로그 작성
+.dev\.dev_utils\write_log.ps1 -Title "작업 제목" -List "내용1", "내용2"
+
+2. 최근 n개 로그 조회
+.dev\.dev_utils\write_log.ps1 -Recent 3
+
+3. 마지막 로그 커밋 처리
+.dev\.dev_utils\write_log.ps1 -MarkCommitted
+
+4. 커밋되지 않은 로그 블럭 전체 보기
+.dev\.dev_utils\write_log.ps1 -ShowUncommitted
