@@ -3,18 +3,18 @@
 # Description: 보안 관련 모듈 (암호화, 해싱, 토큰)
 """
 
-from app.common.security.encryption import (
+from app.common.security.security_encryption import (
     get_encryption, 
     encrypt_text, 
     decrypt_text,
     validate_key
 )
-from app.common.security.hashing import (
+from app.common.security.security_hashing import (
     get_password_hash, 
     verify_password, 
     verify_hash
 )
-from app.common.security.token import (
+from app.common.security.security_token import (
     generate_secure_token,
     generate_uuid,
     sign_data,
@@ -26,7 +26,7 @@ from app.common.security.token import (
     create_access_token,
     create_refresh_token
 )
-from app.common.security.file_encryption import (
+from app.common.security.security_file_encryption import (
     FileEncryption,
     encrypt_data_to_file,
     decrypt_file_to_data,
