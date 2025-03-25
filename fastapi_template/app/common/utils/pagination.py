@@ -7,8 +7,6 @@ from typing import List, TypeVar, Any, Dict
 
 from app.common.schemas.pagination_schema import (
     PaginationParams,
-    PageInfo,
-    PaginatedResponse,
 )
 
 T = TypeVar("T")

@@ -6,7 +6,7 @@
 
 - [스키마 분류 체계](#스키마-분류-체계) [@base_schema](/fastapi_template/app/common/schemas/base_schema.py)
 - [기본 응답 스키마](#기본-응답-스키마) [@base_schema](/fastapi_template/app/common/schemas/base_schema.py)
-- [페이지네이션 스키마](#페이지네이션-스키마) [@pagination](/fastapi_template/app/common/utils/pagination.py)
+- [페이지네이션 스키마](#페이지네이션-스키마) [@pagination_schema](/fastapi_template/app/common/schemas/pagination_schema.py)
 - [기본 스키마 클래스](#기본-스키마-클래스) [@base_schema](/fastapi_template/app/common/schemas/base_schema.py)
 - [스키마 상속 및 확장](#스키마-상속-및-확장) [@schema_examples](/fastapi_template/app/common/schemas/schema_examples.py)
 
@@ -180,29 +180,46 @@ async def get_user(user_id: int):
 
 ## 페이지네이션 스키마
 
-[@pagination](/fastapi_template/app/common/utils/pagination.py)
+[@pagination_schema](/fastapi_template/app/common/schemas/pagination_schema.py)
 
-페이지네이션을 지원하는 API 응답을 위한 스키마를 제공합니다.
+페이지네이션 처리를 위한 스키마와 응답 모델을 제공합니다.
 
-### 페이지네이션 응답
+### 페이지네이션 파라미터
 
 ```python
-from app.common.utils.pagination import PaginationParams, PaginatedResponse
+from app.common.schemas.pagination_schema import PaginationParams
 
 @app.get("/users")
 async def get_users(pagination: PaginationParams = Depends()):
     # DB에서 페이지네이션 데이터 조회
     users, total = await get_users_with_pagination(
         skip=pagination.skip,
-        limit=pagination.limit
+        limit=pagination.page_size
     )
     
-    # 페이지네이션 응답 반환
-    return PaginatedResponse[UserSchema](
-        items=users,
-        total=total,
-        page=pagination.page,
-        size=pagination.limit
+    # pagination.page: 페이지 번호
+    # pagination.page_size: 페이지당 아이템 수
+    # pagination.skip: 건너뛸 아이템 수 ((page-1) * page_size)
+```
+
+### 페이지네이션 응답 모델
+
+```python
+from app.common.schemas.pagination_schema import PaginatedResponse, PaginationParams
+
+@app.get("/products")
+async def get_products(pagination: PaginationParams = Depends()):
+    # 데이터베이스에서 제품 목록과 총 개수 조회
+    products, total = await product_service.get_products_paginated(
+        skip=pagination.skip,
+        limit=pagination.page_size
+    )
+    
+    # 페이지네이션 응답 생성
+    return PaginatedResponse.create(
+        items=products,
+        total_items=total,
+        params=pagination
     )
 ```
 
@@ -211,30 +228,56 @@ async def get_users(pagination: PaginationParams = Depends()):
 요청 예시:
 
 ```
-GET /users?page=1&size=10
+GET /products?page=2&page_size=10
 ```
 
 응답 예시:
 
 ```json
 {
-    "success": true,
-    "message": "Success",
-    "data": {
-        "items": [
-            {"id": 1, "username": "user1"},
-            {"id": 2, "username": "user2"}
-        ],
-        "meta": {
-            "page": 1,
-            "size": 10,
-            "total": 25,
-            "pages": 3,
-            "has_next": true,
-            "has_prev": false
-        }
+    "items": [
+        {"id": 11, "name": "제품 11", "price": 15000},
+        {"id": 12, "name": "제품 12", "price": 22000},
+        ...
+    ],
+    "page_info": {
+        "page": 2,
+        "page_size": 10,
+        "total_items": 35,
+        "total_pages": 4,
+        "has_previous": true,
+        "has_next": true
     }
 }
+```
+
+### 컨트롤러에서의 활용
+
+```python
+from app.common.schemas.pagination_schema import PaginationParams, PaginatedResponse
+from app.common.utils.pagination import apply_pagination
+
+@router.get("/articles", response_model=PaginatedResponse[ArticleSchema])
+async def get_articles(pagination: PaginationParams = Depends()):
+    # 쿼리 객체 생성
+    query = db.query(Article)
+    
+    # 필터링 적용
+    query = query.filter(Article.is_published == True)
+    
+    # 페이지네이션 적용
+    paginated_query = apply_pagination(query, pagination)
+    
+    # 데이터 조회
+    articles = await paginated_query.all()
+    total = await db.query(Article).count()
+    
+    # 페이지네이션 응답 생성
+    return PaginatedResponse.create(
+        items=articles, 
+        total_items=total, 
+        params=pagination
+    )
 ```
 
 ## 기본 스키마 클래스

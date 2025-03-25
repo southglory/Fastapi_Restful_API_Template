@@ -6,6 +6,7 @@
 
 - [파일 유틸리티](#파일-유틸리티)
 - [날짜 유틸리티](#날짜-유틸리티)
+- [페이지네이션 유틸리티](#페이지네이션-유틸리티)
 - [문자열 유틸리티](#문자열-유틸리티)
 - [로깅 유틸리티](#로깅-유틸리티)
 - [비동기 유틸리티](#비동기-유틸리티)
@@ -76,6 +77,83 @@ week_ago = datetime.now() - timedelta(days=7)
 
 # 상대적 시간으로 표시
 time_ago = get_time_ago(week_ago)  # "7일 전"
+```
+
+## 페이지네이션 유틸리티
+
+[@pagination](/fastapi_template/app/common/utils/pagination.py)
+
+`app.common.utils.pagination` 모듈은 데이터베이스 쿼리에 페이지네이션을 적용하는 유틸리티 함수를 제공합니다.
+
+> 참고: 페이지네이션 관련 스키마는 [@pagination_schema](/fastapi_template/app/common/schemas/pagination_schema.py)를 참조하세요.
+
+### 쿼리에 페이지네이션 적용
+
+```python
+from app.common.utils.pagination import apply_pagination
+from app.common.schemas.pagination_schema import PaginationParams
+
+@app.get("/items")
+async def get_items(pagination: PaginationParams = Depends()):
+    # 기본 쿼리 생성
+    query = db.query(Item)
+    
+    # 정렬 적용
+    query = query.order_by(Item.created_at.desc())
+    
+    # 페이지네이션 적용
+    paginated_query = apply_pagination(query, pagination)
+    
+    # 결과 조회
+    items = await paginated_query.all()
+    total = await db.query(Item).count()
+    
+    # 페이지네이션 응답 반환
+    return {
+        "items": items,
+        "total": total,
+        "page": pagination.page,
+        "page_size": pagination.page_size
+    }
+```
+
+### 복잡한 쿼리에 페이지네이션 적용
+
+```python
+from app.common.utils.pagination import apply_pagination
+from app.common.schemas.pagination_schema import PaginationParams, PaginatedResponse
+from sqlalchemy import func
+
+@app.get("/reports", response_model=PaginatedResponse[ReportSchema])
+async def get_reports(
+    pagination: PaginationParams = Depends(),
+    status: Optional[str] = None
+):
+    # 기본 쿼리 생성
+    query = db.query(Report)
+    
+    # 필터 적용
+    if status:
+        query = query.filter(Report.status == status)
+    
+    # 카운트 쿼리 (필터링이 적용된 총 개수)
+    count_query = db.query(func.count(Report.id))
+    if status:
+        count_query = count_query.filter(Report.status == status)
+    
+    # 페이지네이션 적용
+    paginated_query = apply_pagination(query, pagination)
+    
+    # 데이터 조회
+    reports = await paginated_query.all()
+    total = await count_query.scalar()
+    
+    # 페이지네이션 응답 생성
+    return PaginatedResponse.create(
+        items=reports,
+        total_items=total,
+        params=pagination
+    )
 ```
 
 ## 문자열 유틸리티
