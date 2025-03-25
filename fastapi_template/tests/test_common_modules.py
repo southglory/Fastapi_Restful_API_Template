@@ -17,7 +17,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from pydantic import BaseModel
 
 # 설정 모듈 테스트
-from app.common.config import settings, DevSettings
+from app.common.config import DevSettings
+from fastapi_template.app.common.config import config_settings
 
 
 class ConfigTest:
@@ -26,14 +27,14 @@ class ConfigTest:
     def test_settings(self):
         """기본 설정 로드 테스트"""
         print("\n--- 설정 모듈 테스트 ---")
-        print(f"프로젝트 이름: {settings.PROJECT_NAME}")
-        print(f"API 경로: {settings.API_V1_STR}")
-        print(f"데이터베이스 URL: {settings.DATABASE_URL}")
-        print(f"Redis 호스트: {settings.REDIS_HOST}")
+        print(f"프로젝트 이름: {config_settings.PROJECT_NAME}")
+        print(f"API 경로: {config_settings.API_V1_STR}")
+        print(f"데이터베이스 URL: {config_settings.DATABASE_URL}")
+        print(f"Redis 호스트: {config_settings.REDIS_HOST}")
 
-        assert settings.PROJECT_NAME, "프로젝트 이름이 로드되지 않음"
-        assert settings.API_V1_STR, "API 경로가 로드되지 않음"
-        assert settings.DATABASE_URL, "데이터베이스 URL이 로드되지 않음"
+        assert config_settings.PROJECT_NAME, "프로젝트 이름이 로드되지 않음"
+        assert config_settings.API_V1_STR, "API 경로가 로드되지 않음"
+        assert config_settings.DATABASE_URL, "데이터베이스 URL이 로드되지 않음"
 
         print("✅ 설정 모듈 테스트 완료")
         return True

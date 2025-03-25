@@ -28,7 +28,7 @@ if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
 # 모델 가져오기
-from app.common.database.base import Base
+from fastapi_template.app.common.database.database_base import Base
 
 # 모델 임포트 - 이렇게 하면 Base.metadata에 테이블이 등록됩니다
 from app.db.models.user import User

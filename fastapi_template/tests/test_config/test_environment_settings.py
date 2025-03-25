@@ -11,7 +11,7 @@ from functools import lru_cache
 
 # ValidationError 예외 임포트
 from app.common.config import ValidationError, EnvironmentType
-from app.common.config.settings import (
+from fastapi_template.app.common.config.config_settings import (
     Settings, DevSettings, TstSettings, ProdSettings, get_settings
 )
 

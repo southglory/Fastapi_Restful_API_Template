@@ -12,9 +12,7 @@
 app/common/database/
 ├── __init__.py                 # 모듈 초기화 및 내보내기
 ├── database_base.py            # 기본 데이터베이스 클래스
-├── database_session.py         # 세션 관리
-├── database_models.py          # 데이터베이스 모델
-└── database_migrations.py      # 마이그레이션 관리
+└── database_session.py         # 세션 관리
 ```
 
 ## 테스트 용이성
@@ -40,16 +38,6 @@ app/common/database/
    - 세션 관리
    - 트랜잭션 처리
 
-3. **데이터베이스 모델** (`database_models.py`)
-   - 모델 정의
-   - 관계 설정
-   - CRUD 작업
-
-4. **마이그레이션** (`database_migrations.py`)
-   - 마이그레이션 생성
-   - 마이그레이션 실행
-   - 롤백 처리
-
 ## 테스트 접근법
 
 Database 모듈을 테스트할 때 다음 접근법을 권장합니다:
@@ -70,14 +58,6 @@ Database 모듈을 테스트할 때 다음 접근법을 권장합니다:
 
 - [세션 관리 테스트 코드](/fastapi_template/tests/test_database/test_database_session.py)
 
-### 데이터베이스 모델 테스트
-
-- [데이터베이스 모델 테스트 코드](/fastapi_template/tests/test_database/test_database_models.py)
-
-### 마이그레이션 테스트
-
-- [마이그레이션 테스트 코드](/fastapi_template/tests/test_database/test_database_migrations.py)
-
 ## 테스트 디렉토리 구조
 
 테스트 파일은 다음과 같은 구조로 구성합니다:
@@ -87,9 +67,7 @@ tests/
 └── test_database/
     ├── __init__.py
     ├── test_database_base.py
-    ├── test_database_session.py
-    ├── test_database_models.py
-    └── test_database_migrations.py
+    └── test_database_session.py
 ```
 
 ## 테스트 커버리지 확인

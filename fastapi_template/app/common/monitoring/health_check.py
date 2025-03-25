@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import text
 from typing import Dict
 
-from ..database.session import get_db
+from ..database.database_session import get_db
 from ..cache.redis_client import get_redis_connection, RedisCacheBackend
 
 router = APIRouter()

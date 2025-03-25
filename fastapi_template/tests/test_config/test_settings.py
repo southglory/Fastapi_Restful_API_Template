@@ -5,7 +5,7 @@
 
 import os
 import pytest
-from app.common.config.settings import Settings
+from fastapi_template.app.common.config.config_settings import Settings
 
 
 @pytest.fixture

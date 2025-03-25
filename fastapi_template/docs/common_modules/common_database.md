@@ -1,47 +1,50 @@
-# 공통 데이터베이스 모듈 상세 가이드
+# Database 모듈 상세 가이드
 
-이 문서는 FastAPI 템플릿의 공통 데이터베이스 모듈에 대한 상세 사용법과 설명을 제공합니다.
+[@database](/fastapi_template/app/common/database)
 
-## 목차
+## 개요
 
-1. [데이터베이스 연결](#데이터베이스-연결)
-2. [세션 관리](#세션-관리)
-3. [기본 모델](#기본-모델)
-4. [트랜잭션 처리](#트랜잭션-처리)
-5. [데이터베이스 유틸리티](#데이터베이스-유틸리티)
-6. [심화 가이드](#심화-가이드)
+`database` 모듈은 애플리케이션의 데이터베이스 연결과 관리 기능을 구현하는 모듈입니다. SQLAlchemy를 사용하여 데이터베이스 세션, 모델, 마이그레이션 등을 제공하며, 데이터의 영구 저장소 역할을 합니다.
 
-## 데이터베이스 연결
+## 현재 모듈 구조
 
-[@connection](/fastapi_template/app/common/database/connection.py)
+```
+app/common/database/
+├── __init__.py                 # 모듈 초기화 및 내보내기
+├── database_base.py            # 기본 데이터베이스 클래스
+└── database_session.py         # 세션 관리
+```
 
-`app.common.database` 모듈은 SQLAlchemy를 사용하여 비동기 데이터베이스 연결을 제공합니다.
+## 주요 기능
 
-### 지원 데이터베이스
+### 1. 기본 데이터베이스 (`database_base.py`)
 
-이 프로젝트는 다음 데이터베이스를 지원합니다:
+- 데이터베이스 초기화
+- 연결 설정
+- 공통 기능
 
-- **PostgreSQL**: 프로덕션 환경에서 권장 (asyncpg 드라이버 사용)
-- **SQLite**: 개발 및 테스트 환경에서 권장 (aiosqlite 드라이버 사용)
+### 2. 세션 관리 (`database_session.py`)
 
-### 연결 설정
+- 세션 생성
+- 세션 관리
+- 트랜잭션 처리
+
+## 사용 예시
+
+### 데이터베이스 연결 설정
 
 ```python
-from app.common.database.base import engine
+from app.common.database.database_base import engine
 
 # 데이터베이스 URL은 자동으로 적절한 비동기 드라이버로 변환됩니다
 # PostgreSQL URL: postgresql://user:password@localhost:5432/dbname
 # SQLite URL: sqlite:///./dev.db
 ```
 
-## 세션 관리
-
-[@session](/fastapi_template/app/common/database/session.py)
-
-### 데이터베이스 세션 사용
+### 세션 사용
 
 ```python
-from app.common.database import get_db
+from app.common.database.database_session import get_db
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -55,7 +58,7 @@ async def get_items(db: AsyncSession = Depends(get_db)):
 ### 컨텍스트 매니저로 세션 사용
 
 ```python
-from app.common.database import get_async_session
+from app.common.database.database_session import get_async_session
 
 async def some_function():
     async with get_async_session() as session:
@@ -65,14 +68,10 @@ async def some_function():
         return item
 ```
 
-## 기본 모델
-
-[@base](/fastapi_template/app/common/database/base.py)
-
 ### 기본 모델 정의
 
 ```python
-from app.common.database.base import Base
+from app.common.database.database_base import Base
 from sqlalchemy import Column, Integer, String, DateTime
 from sqlalchemy.sql import func
 
@@ -85,27 +84,10 @@ class MyModel(Base):
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 ```
 
-### 공통 모델 믹스인
+### 트랜잭션 처리
 
 ```python
-from app.common.database.mixins import TimestampMixin, UUIDMixin
-
-class User(Base, TimestampMixin, UUIDMixin):
-    __tablename__ = "users"
-    
-    username = Column(String, unique=True, nullable=False)
-    email = Column(String, unique=True, nullable=False)
-    # UUID 필드와 타임스탬프 필드는 믹스인에서 자동으로 추가됨
-```
-
-## 트랜잭션 처리
-
-[@transactions](/fastapi_template/app/common/database/transactions.py)
-
-### 명시적 트랜잭션
-
-```python
-from app.common.database import get_db
+from app.common.database.database_session import get_db
 
 @app.post("/transfer/")
 async def transfer_funds(
@@ -138,64 +120,19 @@ async def transfer_funds(
         raise Exception(f"송금 실패: {str(e)}")
 ```
 
-### 트랜잭션 데코레이터
+## 모범 사례
 
-```python
-from app.common.database.utils import transactional
+1. 모든 데이터베이스 작업의 성공/실패를 처리합니다.
+2. 트랜잭션의 원자성을 보장합니다.
+3. 모델 관계와 제약조건을 적절히 설정합니다.
+4. 마이그레이션의 안전성을 확인합니다.
 
-@app.post("/users/")
-@transactional()
-async def create_user(
-    user_data: UserCreate,
-    db: AsyncSession = Depends(get_db)
-):
-    # 사용자 생성
-    db_user = User(**user_data.dict())
-    db.add(db_user)
-    await db.flush()
-    
-    # 사용자 프로필 생성
-    db_profile = UserProfile(user_id=db_user.id)
-    db.add(db_profile)
-    
-    # 트랜잭션은 데코레이터에 의해 자동으로 커밋됨
-    return db_user
-```
+## 주의사항
 
-## 데이터베이스 유틸리티
-
-[@utils](/fastapi_template/app/common/database/utils.py)
-
-### 페이지네이션
-
-```python
-from app.common.database.utils import paginate
-
-@app.get("/users/")
-async def get_users(
-    page: int = 1,
-    size: int = 10,
-    db: AsyncSession = Depends(get_db)
-):
-    query = select(User).order_by(User.id)
-    return await paginate(db, query, page, size)
-```
-
-### 벌크 연산
-
-```python
-from app.common.database.utils import bulk_insert, bulk_update
-
-@app.post("/items/bulk")
-async def create_bulk_items(
-    items: list[ItemCreate],
-    db: AsyncSession = Depends(get_db)
-):
-    # 대량 삽입
-    item_dicts = [item.dict() for item in items]
-    await bulk_insert(db, Item, item_dicts)
-    return {"message": f"{len(items)}개 아이템 생성 완료"}
-```
+1. 실제 데이터베이스 대신 테스트용 데이터베이스를 사용합니다.
+2. 각 작업 후 데이터베이스를 초기화합니다.
+3. 트랜잭션 격리 수준을 고려합니다.
+4. 마이그레이션 롤백을 준비합니다.
 
 ## 심화 가이드
 

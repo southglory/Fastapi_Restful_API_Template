@@ -9,7 +9,7 @@ import hashlib
 import secrets
 from typing import Optional, Union, Any, cast, TypeVar
 
-from app.common.config import settings
+from fastapi_template.app.common.config import config_settings
 
 
 class Encryption:
@@ -85,11 +85,11 @@ class Encryption:
     def _derive_key_from_secret(self, salt: Optional[bytes] = None) -> bytes:
         """설정의 SECRET_KEY에서 암호화 키 유도"""
         # 비밀 키가 없으면 랜덤 생성
-        if not settings.SECRET_KEY:
+        if not config_settings.SECRET_KEY:
             return self.generate_key()
 
         # 비밀 키를 바이트로 변환
-        secret_key = settings.SECRET_KEY.encode()
+        secret_key = config_settings.SECRET_KEY.encode()
 
         # 솔트 설정
         if salt is None:

@@ -9,7 +9,7 @@
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from app.common.database.base import BaseModel
+from fastapi_template.app.common.database.database_base import BaseModel
 
 class Item(BaseModel):
     """아이템 모델"""

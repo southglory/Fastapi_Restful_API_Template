@@ -14,7 +14,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.common.auth import create_access_token
-from app.common.config import settings
+from fastapi_template.app.common.config import config_settings
 from app.common.exceptions import AuthenticationError
 from app.common.database import get_db
 from app.db.schemas.token import Token
@@ -36,7 +36,7 @@ async def login_for_access_token(
     if not user:
         raise AuthenticationError("Incorrect email or password")
 
-    access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token_expires = timedelta(minutes=config_settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
         subject=user.id, expires_delta=access_token_expires
     )

@@ -11,10 +11,7 @@
 ```
 app/common/config/
 ├── __init__.py                 # 모듈 초기화 및 내보내기
-├── config_base.py              # 기본 설정 클래스
-├── config_app.py               # 애플리케이션 설정
-├── config_db.py                # 데이터베이스 설정
-└── config_security.py          # 보안 설정
+└── config_settings.py          # 설정 관리
 ```
 
 ## 테스트 용이성
@@ -30,25 +27,11 @@ app/common/config/
 
 주요 테스트 대상은 다음과 같습니다:
 
-1. **기본 설정** (`config_base.py`)
+1. **설정 관리** (`config_settings.py`)
    - 기본 설정 클래스
    - 환경 변수 로드
    - 기본값 처리
-
-2. **애플리케이션 설정** (`config_app.py`)
-   - 앱 이름/버전
-   - 디버그 모드
-   - 로깅 설정
-
-3. **데이터베이스 설정** (`config_db.py`)
-   - DB URL
-   - 연결 풀
-   - 타임아웃
-
-4. **보안 설정** (`config_security.py`)
-   - JWT 설정
-   - 암호화 키
-   - CORS 설정
+   - 설정 유효성 검사
 
 ## 테스트 접근법
 
