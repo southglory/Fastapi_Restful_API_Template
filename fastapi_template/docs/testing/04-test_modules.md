@@ -15,28 +15,28 @@
 - **난이도**: 쉬움
 - **특징**: 순수 함수, 외부 의존성 없음, 결정적 동작
 - **주요 테스트 대상**: 문자열 검증, 데이터 검증, 파일 검증 함수
-- **[상세 가이드](modules/validators.md)**
+- **[상세 가이드](modules/testing_modules_validators.md)**
 
 ### Security 모듈
 
 - **난이도**: 쉬움-중간
 - **특징**: 암호화/해시 함수, 대부분 순수 함수, 일부 외부 라이브러리 의존
 - **주요 테스트 대상**: 암호화/복호화, 해싱, 키 생성 기능
-- **[상세 가이드](modules/security.md)**
+- **[상세 가이드](modules/testing_modules_security.md)**
 
 ### Config 모듈
 
 - **난이도**: 쉬움-중간
 - **특징**: 환경 변수 의존, 설정 로드 및 검증
 - **주요 테스트 대상**: 설정 로드, 기본값 적용, 환경 변수 오버라이드
-- **[상세 가이드](modules/config.md)**
+- **[상세 가이드](modules/testing_modules_config.md)**
 
 ### Schemas 모듈
 
 - **난이도**: 쉬움-중간
 - **특징**: Pydantic 모델 기반, 데이터 검증 로직
 - **주요 테스트 대상**: 스키마 검증, 변환, 직렬화/역직렬화
-- **[상세 가이드](modules/schemas.md)**
+- **[상세 가이드](modules/testing_modules_schemas.md)**
 
 ### Utils 모듈
 
@@ -44,77 +44,77 @@
 - **특징**: 다양한 유틸리티 함수, 일부 외부 의존성, 작은 함수들이 많음
 - **주요 테스트 대상**: 날짜 처리, 문자열 처리, 파일 처리 유틸리티, 페이지네이션
 - **테스트 방법**: 단위 테스트, 모의 객체, 경계값 테스트
-- **[상세 가이드](modules/utils.md)**
+- **[상세 가이드](modules/testing_modules_utils.md)**
 
 ### Exceptions 모듈
 
 - **난이도**: 중간
 - **특징**: 예외 클래스, 예외 처리기
 - **주요 테스트 대상**: 커스텀 예외, 예외 핸들러, 오류 응답
-- **[상세 가이드](modules/exceptions.md)**
+- **[상세 가이드](modules/testing_modules_exceptions.md)**
 
 ### Middleware 모듈
 
 - **난이도**: 중간-어려움
 - **특징**: 요청/응답 처리, HTTP 컨텍스트 의존성
 - **주요 테스트 대상**: 미들웨어 함수, 요청/응답 수정, 오류 처리
-- **[상세 가이드](modules/middleware.md)**
+- **[상세 가이드](modules/testing_modules_middleware.md)**
 
 ### Auth 모듈
 
 - **난이도**: 중간-어려움
 - **특징**: 인증 흐름, 토큰 처리, 사용자 검증
 - **주요 테스트 대상**: 인증 의존성, 토큰 생성/검증, 권한 확인
-- **[상세 가이드](modules/auth.md)**
+- **[상세 가이드](modules/testing_modules_auth.md)**
 
 ### Cache 모듈
 
 - **난이도**: 어려움
 - **특징**: Redis 의존성, 비동기 코드, 캐싱 로직
 - **주요 테스트 대상**: 캐시 데코레이터, 캐시 무효화, 캐시 키 관리
-- **[상세 가이드](modules/cache.md)**
+- **[상세 가이드](modules/testing_modules_cache.md)**
 
 ### Database 모듈
 
 - **난이도**: 어려움
 - **특징**: DB 의존성, 트랜잭션, 비동기 ORM
 - **주요 테스트 대상**: 모델, 세션 관리, CRUD 작업
-- **[상세 가이드](modules/database.md)**
+- **[상세 가이드](modules/testing_modules_database.md)**
 
 ### Monitoring 모듈
 
 - **난이도**: 어려움
 - **특징**: 시스템 상태 모니터링, 로깅, 외부 도구 의존성
 - **주요 테스트 대상**: 로깅 기능, 헬스 체크, 메트릭 수집
-- **[상세 가이드](modules/monitoring.md)**
+- **[상세 가이드](modules/testing_modules_monitoring.md)**
 
 ### API 모듈
 
 - **난이도**: 가장 어려움
 - **특징**: 전체 애플리케이션 스택, 여러 의존성 결합
 - **주요 테스트 대상**: HTTP 엔드포인트, 요청/응답 사이클, 라우터
-- **[상세 가이드](modules/api.md)**
+- **[상세 가이드](modules/testing_modules_api.md)**
 
 ### Dependency 모듈
 
 - **난이도**: 중간-어려움
 - **특징**: 의존성 주입 시스템, 인증/권한 검증, 상태 관리
 - **주요 테스트 대상**: 의존성 함수, 의존성 오버라이드, 의존성 체인
-- **[상세 가이드](modules/dependency.md)**
+- **[상세 가이드](modules/testing_modules_dependency.md)**
 
 ### Repositories 모듈
 
 - **난이도**: 중간
 - **특징**: 데이터베이스 액세스 계층, 쿼리 관리, 트랜잭션 처리
 - **주요 테스트 대상**: CRUD 연산, 복잡한 쿼리, 동시성 처리
-- **[상세 가이드](modules/repositories.md)**
+- **[상세 가이드](modules/testing_modules_repositories.md)**
 
 ### Services 모듈
 
 - **난이도**: 중간
 - **특징**: 비즈니스 로직, 여러 리포지토리 조합, 외부 API 호출
 - **주요 테스트 대상**: 비즈니스 규칙, 데이터 변환, 트랜잭션 관리
-- **[상세 가이드](modules/services.md)**
+- **[상세 가이드](modules/testing_modules_services.md)**
 
 ## 참고하기
 
