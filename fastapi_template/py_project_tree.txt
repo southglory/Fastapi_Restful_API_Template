@@ -120,6 +120,9 @@ fastapi_template\tests\test_config: test_full_coverage.py
 fastapi_template\tests\test_config: test_settings.py
 fastapi_template\tests\test_config: test_settings_defaults.py
 fastapi_template\tests\test_config: test_settings_validation.py
+fastapi_template\tests\test_database: __init__.py
+fastapi_template\tests\test_database: test_database_base.py
+fastapi_template\tests\test_database: test_database_session.py
 fastapi_template\tests\test_exceptions: test_exceptions_auth.py
 fastapi_template\tests\test_exceptions: test_exceptions_base.py
 fastapi_template\tests\test_exceptions: test_exceptions_database.py

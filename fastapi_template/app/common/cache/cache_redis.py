@@ -1,29 +1,32 @@
 """
-# File: fastapi_template/app/common/cache/redis_client.py
-# Description: Redis 캐싱 유틸리티
+# File: fastapi_template/app/common/cache/cache_redis.py
+# Description: Redis 기반 캐시 구현
 """
 
-import json
-import pickle
-import base64
 from functools import wraps
-from typing import Any, Callable, Dict, Optional, TypeVar, Union, cast
+from typing import Any, Callable, Dict, Optional, TypeVar, cast
 
 import redis.asyncio as redis_async
 from fastapi import Depends, Request
-from pydantic import BaseModel
 
 from fastapi_template.app.common.config import config_settings
+from fastapi_template.app.common.cache.cache_base import (
+    CacheBackend,
+    cache_key_builder,
+    serialize_value,
+    deserialize_value,
+)
 
 # Redis 연결을 위한 글로벌 변수
 redis_conn = None
-
-T = TypeVar("T")
 
 
 async def get_redis_connection() -> redis_async.Redis:
     """
     Redis 연결 반환 (싱글톤 패턴)
+    
+    Returns:
+        redis_async.Redis: Redis 연결 객체
     """
     global redis_conn
     if redis_conn is None:
@@ -36,57 +39,64 @@ async def get_redis_connection() -> redis_async.Redis:
     return redis_conn
 
 
-class RedisCacheBackend:
+class RedisCacheBackend(CacheBackend):
     """
     Redis 캐시 백엔드 클래스
     """
 
     def __init__(self, redis_conn: redis_async.Redis, ttl: int = config_settings.REDIS_TTL):
+        """
+        초기화
+        
+        Args:
+            redis_conn: Redis 연결 객체
+            ttl: 캐시 유효기간 (초)
+        """
         self.redis = redis_conn
         self.ttl = ttl
 
     async def get(self, key: str) -> Optional[str]:
         """
         캐시에서 값 조회
+        
+        Args:
+            key: 캐시 키
+            
+        Returns:
+            Optional[str]: 조회된 값 또는 None
         """
         return await self.redis.get(key)
 
     async def set(self, key: str, value: str, ttl: Optional[int] = None) -> None:
         """
         캐시에 값 저장
+        
+        Args:
+            key: 캐시 키
+            value: 저장할 값
+            ttl: 유효기간 (초)
         """
         await self.redis.set(key, value, ex=ttl or self.ttl)
 
     async def delete(self, key: str) -> None:
         """
         캐시에서 키 삭제
+        
+        Args:
+            key: 삭제할 캐시 키
         """
         await self.redis.delete(key)
 
     async def clear_pattern(self, pattern: str) -> None:
         """
         패턴과 일치하는 모든 키 삭제
+        
+        Args:
+            pattern: 키 패턴 (예: "user:*")
         """
         keys = await self.redis.keys(pattern)
         if keys:
             await self.redis.delete(*keys)
-
-
-def cache_key_builder(prefix: str, *args, **kwargs) -> str:
-    """
-    캐시 키 생성 유틸리티
-    """
-    key_parts = [prefix]
-
-    # 위치 인자 처리
-    if args:
-        key_parts.extend([str(arg) for arg in args])
-
-    # 키워드 인자 처리 (정렬하여 일관성 유지)
-    if kwargs:
-        key_parts.extend([f"{k}:{kwargs[k]}" for k in sorted(kwargs.keys())])
-
-    return ":".join(key_parts)
 
 
 def cached(
@@ -99,6 +109,14 @@ def cached(
         @cached("user_profile", ttl=300)
         async def get_user_profile(user_id: int) -> dict:
             ...
+            
+    Args:
+        prefix: 캐시 키 접두사
+        ttl: 캐시 유효기간 (초)
+        key_builder: 캐시 키 생성 함수
+        
+    Returns:
+        Callable: 데코레이터 함수
     """
 
     def decorator(func: Callable) -> Callable:
@@ -114,28 +132,15 @@ def cached(
             # 캐시에서 값 조회
             cached_value = await cache.get(cache_key)
             if cached_value:
-                try:
-                    return json.loads(cached_value)
-                except json.JSONDecodeError:
-                    # JSON 디코딩 실패 시 원본 문자열 반환
-                    return cached_value
+                return deserialize_value(cached_value)
 
             # 원본 함수 실행
             result = await func(*args, **kwargs)
 
             # 결과가 None이 아니면 캐싱
             if result is not None:
-                if isinstance(result, (dict, list, str, int, float, bool)):
-                    # 기본 타입은 JSON으로 직렬화
-                    await cache.set(cache_key, json.dumps(result))
-                elif isinstance(result, BaseModel):
-                    # Pydantic 모델은 JSON으로 직렬화
-                    await cache.set(cache_key, result.model_dump_json())
-                else:
-                    # 그 외는 pickle로 직렬화 후 base64로 인코딩하여 문자열로 저장
-                    pickled_data = pickle.dumps(result)
-                    encoded_data = base64.b64encode(pickled_data).decode("utf-8")
-                    await cache.set(cache_key, encoded_data)
+                serialized_value = serialize_value(result)
+                await cache.set(cache_key, serialized_value)
 
             return result
 
@@ -152,6 +157,12 @@ def invalidate_cache(pattern: str):
         @invalidate_cache("user_profile:*")
         async def update_user_profile(user_id: int, data: dict) -> dict:
             ...
+            
+    Args:
+        pattern: 캐시 키 패턴
+        
+    Returns:
+        Callable: 데코레이터 함수
     """
 
     def decorator(func: Callable) -> Callable:
@@ -171,4 +182,4 @@ def invalidate_cache(pattern: str):
 
         return wrapper
 
-    return decorator
+    return decorator 

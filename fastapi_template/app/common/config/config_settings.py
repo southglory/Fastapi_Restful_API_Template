@@ -20,6 +20,13 @@ class EnvironmentType(str, Enum):
     PRODUCTION = "production"
 
 
+class CacheType(str, Enum):
+    """캐시 타입 정의"""
+    REDIS = "redis"
+    MEMORY = "memory"
+    FILE = "file"
+
+
 class ValidationError(Exception):
     """설정 유효성 검사 오류"""
     pass
@@ -78,9 +85,12 @@ class Settings(BaseSettings):
     DATABASE_URL: Optional[str] = None
     DB_ECHO_LOG: bool = False
     
-    # 레디스 설정
+    # 캐시 설정
+    CACHE_TYPE: CacheType = CacheType.REDIS
     REDIS_HOST: str = "localhost"
     REDIS_PORT: int = 6379
+    REDIS_DB: int = 0
+    REDIS_TTL: int = 3600  # 기본 캐시 TTL(초)
     
     # 로깅 설정
     LOG_LEVEL: str = "INFO"
@@ -126,6 +136,17 @@ class Settings(BaseSettings):
             raise ValidationError(f"지원하지 않는 데이터베이스 URL 형식: {v}")
         
         return v
+    
+    @field_validator('CACHE_TYPE')
+    def validate_cache_type(cls, v):
+        """캐시 타입 유효성 검증"""
+        if isinstance(v, CacheType):
+            return v
+        
+        if v.lower() not in [e.value for e in CacheType]:
+            raise ValidationError(f"지원하지 않는 캐시 타입: {v}. 지원 타입: {', '.join([e.value for e in CacheType])}")
+        
+        return CacheType(v.lower())
     
     @model_validator(mode='after')
     def validate_settings_by_environment(self) -> 'Settings':
@@ -188,7 +209,29 @@ class Settings(BaseSettings):
         return {
             "host": self.REDIS_HOST,
             "port": self.REDIS_PORT,
+            "db": self.REDIS_DB,
+            "ttl": self.REDIS_TTL
         }
+    
+    def get_cache_settings(self) -> Dict[str, Any]:
+        """
+        캐시 설정 반환
+        
+        Returns:
+            캐시 설정 딕셔너리
+        """
+        logging.debug(f"캐시 설정 반환: TYPE={self.CACHE_TYPE}")
+        
+        if self.CACHE_TYPE == CacheType.REDIS:
+            return {
+                "type": self.CACHE_TYPE.value,
+                **self.get_redis_settings()
+            }
+        else:
+            return {
+                "type": self.CACHE_TYPE.value,
+                "ttl": self.REDIS_TTL  # 모든 캐시에 공통으로 사용되는 TTL
+            }
     
     def dict_config(self) -> Dict[str, Any]:
         """
@@ -217,6 +260,7 @@ class DevSettings(Settings):
     DB_ECHO_LOG: bool = True
     LOG_LEVEL: str = "DEBUG"
     ENABLE_PROFILER: bool = True
+    CACHE_TYPE: CacheType = CacheType.MEMORY  # 개발 환경에서는 메모리 캐시 사용
     
     model_config = {
         "env_file": ".env.dev",
@@ -235,6 +279,7 @@ class TstSettings(Settings):
     DATABASE_URL: str = "sqlite:///./test.db"
     DB_ECHO_LOG: bool = False
     CORS_ORIGINS: str = "*"
+    CACHE_TYPE: CacheType = CacheType.MEMORY  # 테스트 환경에서는 메모리 캐시 사용
     
     model_config = {
         "env_file": ".env.test",
@@ -252,6 +297,7 @@ class ProdSettings(Settings):
     RELOAD: bool = False
     ENABLE_DOCS: bool = False
     ENABLE_PROFILER: bool = False
+    CACHE_TYPE: CacheType = CacheType.REDIS  # 프로덕션 환경에서는 Redis 캐시 사용
     
     model_config = {
         "env_file": ".env.prod",
@@ -264,18 +310,22 @@ class ProdSettings(Settings):
 @lru_cache()
 def get_settings() -> Settings:
     """
-    애플리케이션 설정 로드
+    설정 인스턴스를 반환합니다.
     
-    환경 변수 'ENVIRONMENT'에 따라 적절한 설정 클래스 반환
+    환경 변수 ENVIRONMENT에 따라 적절한 설정 클래스를 반환합니다.
     
     Returns:
-        환경에 맞는 설정 객체
+        Settings: 환경에 맞는 설정 인스턴스
     """
-    environment = os.environ.get("ENVIRONMENT", "").lower()
+    environment = os.getenv("ENVIRONMENT", "development").lower()
     
-    if environment == EnvironmentType.TESTING:
-        return TstSettings()
-    elif environment == EnvironmentType.PRODUCTION:
+    if environment == "production":
         return ProdSettings()
+    elif environment == "testing":
+        return TstSettings()
     else:
         return DevSettings()
+
+
+# 전역 설정 인스턴스
+config_settings = get_settings()

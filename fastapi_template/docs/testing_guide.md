@@ -23,21 +23,21 @@
 
 | 순위 | 모듈 | 난이도 | 문서 링크 |
 |-----|-----|-------|----------|
-| 1 | Validators | 쉬움 | [가이드](testing/modules/validators.md) |
-| 2 | Security | 쉬움-중간 | [가이드](testing/modules/security.md) |
-| 3 | Config | 쉬움-중간 | [가이드](testing/modules/config.md) |
-| 4 | Schemas | 쉬움-중간 | [가이드](testing/modules/schemas.md) |
-| 5 | Utils | 중간 | [가이드](testing/modules/utils.md) |
-| 6 | Exceptions | 중간 | [가이드](testing/modules/exceptions.md) |
-| 7 | Repositories | 중간 | [가이드](testing/modules/repositories.md) |
-| 8 | Services | 중간 | [가이드](testing/modules/services.md) |
-| 9 | Middleware | 중간-어려움 | [가이드](testing/modules/middleware.md) |
-| 10 | Dependency | 중간-어려움 | [가이드](testing/modules/dependency.md) |
-| 11 | Auth | 중간-어려움 | [가이드](testing/modules/auth.md) |
-| 12 | Cache | 어려움 | [가이드](testing/modules/cache.md) |
-| 13 | Database | 어려움 | [가이드](testing/modules/database.md) |
-| 14 | Monitoring | 어려움 | [가이드](testing/modules/monitoring.md) |
-| 15 | API | 가장 어려움 | [가이드](testing/modules/api.md) |
+| 1 | Validators | 쉬움 | [가이드](testing/modules/testing_modules_validators.md) |
+| 2 | Security | 쉬움-중간 | [가이드](testing/modules/testing_modules_security.md) |
+| 3 | Config | 쉬움-중간 | [가이드](testing/modules/testing_modules_config.md) |
+| 4 | Schemas | 쉬움-중간 | [가이드](testing/modules/testing_modules_schemas.md) |
+| 5 | Utils | 중간 | [가이드](testing/modules/testing_modules_utils.md) |
+| 6 | Exceptions | 중간 | [가이드](testing/modules/testing_modules_exceptions.md) |
+| 7 | Repositories | 중간 | [가이드](testing/modules/testing_modules_repositories.md) |
+| 8 | Services | 중간 | [가이드](testing/modules/testing_modules_services.md) |
+| 9 | Middleware | 중간-어려움 | [가이드](testing/modules/testing_modules_middleware.md) |
+| 10 | Dependency | 중간-어려움 | [가이드](testing/modules/testing_modules_dependency.md) |
+| 11 | Auth | 중간-어려움 | [가이드](testing/modules/testing_modules_auth.md) |
+| 12 | Cache | 어려움 | [가이드](testing/modules/testing_modules_cache.md) |
+| 13 | Database | 어려움 | [가이드](testing/modules/testing_modules_database.md) |
+| 14 | Monitoring | 어려움 | [가이드](testing/modules/testing_modules_monitoring.md) |
+| 15 | API | 가장 어려움 | [가이드](testing/modules/testing_modules_api.md) |
 
 ## 모듈 의존성 순위
 
