@@ -4,7 +4,6 @@
 """
 import pytest
 from fastapi import status
-
 from app.common.exceptions.exceptions_http import (
     BadRequestError,
     UnauthorizedError,
@@ -14,7 +13,7 @@ from app.common.exceptions.exceptions_http import (
     ConflictError,
     UnprocessableEntityError,
     TooManyRequestsError,
-    InternalServerError
+    InternalServerError,
 )
 
 

@@ -12,6 +12,8 @@ from pydantic import ValidationError as PydanticValidationError
 from sqlalchemy.exc import SQLAlchemyError
 
 from app.common.exceptions.exceptions_base import AppException
+from app.common.exceptions.exceptions_validation import ValidationError
+from app.common.exceptions.exceptions_database import DatabaseError
 from app.common.exceptions.exceptions_handlers import add_exception_handlers
 
 

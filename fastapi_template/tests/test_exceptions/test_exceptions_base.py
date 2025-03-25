@@ -4,8 +4,7 @@
 """
 
 import pytest
-from fastapi import status
-
+from fastapi import status, HTTPException
 from app.common.exceptions.exceptions_base import AppException
 
 

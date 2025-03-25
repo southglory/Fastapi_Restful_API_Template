@@ -4,14 +4,13 @@
 """
 import pytest
 from fastapi import status
-
 from app.common.exceptions.exceptions_database import (
     DatabaseError,
     DatabaseConnectionError,
     DatabaseQueryError,
     EntityNotFoundError,
     EntityAlreadyExistsError,
-    TransactionError
+    TransactionError,
 )
 
 

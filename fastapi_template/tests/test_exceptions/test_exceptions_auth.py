@@ -4,7 +4,6 @@
 """
 import pytest
 from fastapi import status
-
 from app.common.exceptions.exceptions_auth import (
     AuthenticationError,
     InvalidTokenError,
@@ -13,7 +12,7 @@ from app.common.exceptions.exceptions_auth import (
     PermissionDeniedError,
     InsufficientRoleError,
     AccountDisabledError,
-    AccountLockedError
+    AccountLockedError,
 )
 
 

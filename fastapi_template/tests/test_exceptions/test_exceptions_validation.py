@@ -4,13 +4,12 @@
 """
 import pytest
 from fastapi import status
-
 from app.common.exceptions.exceptions_validation import (
     ValidationError,
     InvalidParameterError,
     MissingRequiredFieldError,
     InvalidFormatError,
-    ValueOutOfRangeError
+    ValueOutOfRangeError,
 )
 
 
@@ -40,6 +39,10 @@ def test_invalid_parameter_error():
     )
     assert exc.detail == "파라미터 'age'의 값 'invalid'이(가) 유효하지 않습니다: 숫자여야 합니다"
     
+    # 파라미터 이름만 포함
+    exc = InvalidParameterError(param_name="age")
+    assert exc.detail == "파라미터 'age'이(가) 유효하지 않습니다."
+    
     # 커스텀 메시지
     exc = InvalidParameterError(detail="커스텀 파라미터 오류")
     assert exc.detail == "커스텀 파라미터 오류"
@@ -55,6 +58,10 @@ def test_missing_required_field_error():
     # 필드 목록 포함
     exc = MissingRequiredFieldError(field_names=["name", "email"])
     assert exc.detail == "필수 필드 'name', 'email'이(가) 누락되었습니다."
+    
+    # 단일 필드 문자열로 포함
+    exc = MissingRequiredFieldError(field_names="name")
+    assert exc.detail == "필수 필드 'name'이(가) 누락되었습니다."
     
     # 커스텀 메시지
     exc = MissingRequiredFieldError(detail="커스텀 필드 오류")
@@ -95,6 +102,22 @@ def test_value_out_of_range_error():
         max_value=120
     )
     assert exc.detail == "필드 'age'의 값 '150'이(가) 범위를 벗어났습니다. 허용 범위: 0 ~ 120."
+    
+    # 최소값만 포함
+    exc = ValueOutOfRangeError(
+        field_name="age",
+        value=150,
+        min_value=0
+    )
+    assert exc.detail == "필드 'age'의 값 '150'이(가) 범위를 벗어났습니다. 최소값: 0."
+    
+    # 최대값만 포함
+    exc = ValueOutOfRangeError(
+        field_name="age",
+        value=150,
+        max_value=120
+    )
+    assert exc.detail == "필드 'age'의 값 '150'이(가) 범위를 벗어났습니다. 최대값: 120."
     
     # 커스텀 메시지
     exc = ValueOutOfRangeError(detail="커스텀 범위 오류")
