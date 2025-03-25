@@ -1,0 +1,27 @@
+[check_git_status.ps1 사용법 안내]
+
+위치:
+  .dev/.dev_utils/check_git_status.ps1
+
+목적:
+  Git 저장소의 커밋되지 않은 변경사항(Uncommitted changes)을 한눈에 요약해서 확인합니다.
+
+사용 방법:
+  PowerShell에서 아래 명령어 실행:
+
+    .\.dev\.dev_utils\check_git_status.ps1
+
+출력 항목:
+
+  Git status (uncommitted changes)
+
+  Untracked:   → git이 아직 추적하지 않는 새 파일 (git add 안 된 상태)
+    - 파일명                                 # 신규
+
+  Modified:    → 수정되었지만 아직 커밋되지 않은 파일
+    - 파일명                                 # 변경됨 / 삭제됨
+
+  Staged:      → git add로 스테이징된 파일 (커밋 준비 완료 상태)
+    - 파일명                                 # 변경됨 / 삭제됨
+
+  Clean working tree.  → 변경사항이 없는 경우 출력됨
