@@ -20,7 +20,10 @@ fastapi_template\app\common\auth: __init__.py
 fastapi_template\app\common\auth: jwt.py
 fastapi_template\app\common\auth: password.py
 fastapi_template\app\common\cache: __init__.py
-fastapi_template\app\common\cache: redis_client.py
+fastapi_template\app\common\cache: cache_base.py
+fastapi_template\app\common\cache: cache_file.py
+fastapi_template\app\common\cache: cache_memory.py
+fastapi_template\app\common\cache: cache_redis.py
 fastapi_template\app\common\config: __init__.py
 fastapi_template\app\common\config: config_settings.py
 fastapi_template\app\common\database: __init__.py
@@ -40,6 +43,10 @@ fastapi_template\app\common\middleware: logging_middleware.py
 fastapi_template\app\common\middleware: rate_limiter.py
 fastapi_template\app\common\monitoring: __init__.py
 fastapi_template\app\common\monitoring: health_check.py
+fastapi_template\app\common\repositories: __init__.py
+fastapi_template\app\common\repositories: repositories_auth.py
+fastapi_template\app\common\repositories: repositories_base.py
+fastapi_template\app\common\repositories: repositories_user.py
 fastapi_template\app\common\schemas: __init__.py
 fastapi_template\app\common\schemas: base_schema.py
 fastapi_template\app\common\schemas: pagination_schema.py
@@ -113,6 +120,13 @@ fastapi_template\docs\testing\modules: testing_modules_utils.md
 fastapi_template\docs\testing\modules: testing_modules_validators.md
 fastapi_template\tests: conftest.py
 fastapi_template\tests: test_common_modules.py
+fastapi_template\tests\test_cache: __init__.py
+fastapi_template\tests\test_cache: test_cache_base.py
+fastapi_template\tests\test_cache: test_cache_decorators.py
+fastapi_template\tests\test_cache: test_cache_file.py
+fastapi_template\tests\test_cache: test_cache_init.py
+fastapi_template\tests\test_cache: test_cache_memory.py
+fastapi_template\tests\test_cache: test_cache_redis.py
 fastapi_template\tests\test_config: __init__.py
 fastapi_template\tests\test_config: test_config_file.py
 fastapi_template\tests\test_config: test_environment_settings.py

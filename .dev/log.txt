@@ -416,3 +416,9 @@ app/common/cache 모듈의 Redis 의존성을 제거하고 메모리/파일 캐�
 app/common/cache 모듈의 유닛 테스트를 구현하여 코드 커버리지 90% 달성함. 기본 캐시, 메모리 캐시, 파일 캐시, 데코레이터에 대한 테스트 완료.
 2025-03-25 (17:16) 캐시 모듈 테스트 코드 개선 및 95% 커버리지 달성
 app/common/cache 모듈에 대한 테스트 코드를 개선하여 95% 코드 커버리지를 달성함. 파일 캐시는 100%, 메모리 캐시는 97%, Redis 캐시는 93% 커버리지를 달성함.
+2025-03-26 (17:52) 리포지토리 모듈 경로 수정
+app/common/repositories 모듈의 임포트 경로를 수정하여 app/db/models 및 app/db/schemas와 일관성 있게 맞춤. FileRepository 추가 및 파일 경로 표준화.2025-03-26 (17:54) 파일 관리 모듈 추가
+파일 관리를 위한 모델(File), 스키마(FileCreate, FileUpdate), 리포지토리(FileRepository) 구현
+2025-03-26 (17:57) 토큰 모델 추가
+인증 토큰을 위한 Token 데이터베이스 모델 추가 및 User 모델과의 관계 설정. AuthRepository 클래스가 사용하는 모델 지원.
+----------- committed -----------

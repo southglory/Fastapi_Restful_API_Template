@@ -7,8 +7,10 @@
 
 from app.db.models.user import User
 from app.db.models.item import Item
+from app.db.models.file import File
+from app.db.models.token import Token
 from app.common.database import Base
 
 # 모든 모델을 여기서 import하여 Alembic이 자동으로 감지할 수 있게 함
 
-__all__ = ["User", "Item", "Base"]
+__all__ = ["User", "Item", "File", "Token", "Base"]
